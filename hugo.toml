@@ -1,7 +1,7 @@
 baseURL = 'https://braynm.com'
 languageCode = 'en-us'
 title = 'Bryan Madrid'
-theme = 'novela'
+theme = 'novela-fork'
 pygmentsstyle = 'monokai'
 
 paginate = 6
@@ -9,10 +9,7 @@ paginate = 6
 [social]
 twitter= "https://twitter.com/braynm1925"
 github= "https://github.com/braynm"
-linkedin= "https://www.linkedin.com/company/forestry.io"
-instagram = "#"
-dribbble = "#"
-youtube = "#"
+linkedin= "https://www.linkedin.com/in/braynm"
 
 [taxonomies]
 author = "authors"

@@ -1,3 +1,6 @@
 [submodule "themes/novela"]
 	path = themes/novela
 	url = https://github.com/forestryio/hugo-theme-novela.git
+[submodule "themes/novela-fork"]
+	path = themes/novela-fork
+	url = git@github.com:braynm/hugo-theme-novela.git
