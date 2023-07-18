@@ -4,7 +4,7 @@ title: About
 
 
 ## About Me
-I am Bryan! I am from the Philippines. As a software engineer, I work remotely for a startup, which gives me the flexibility to work from anywhere. I absolutely love using Vim as my go-to text editor. It's efficient and helps me code faster.
+I am Bryan! I am from the Philippines. I am a software engineer with 9 years of experience, I work remotely for a startup, which gives me the flexibility to work from anywhere. I absolutely love using Vim as my go-to text editor. It's efficient and helps me code faster.
 
 In my day-to-day work, I utilize a variety of technologies like Elixir, Phoenix, PostgreSQL, and Node.js. These tools allow me to build awesome software solutions and tackle exciting challenges.
 
