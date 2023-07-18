@@ -2,10 +2,17 @@
 title: About
 ---
 
-Etiam porta sem malesuada magna mollis euismod. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec id elit non mi porta gravida at eget metus. Donec sed odio dui.
 
-Donec sed odio dui. Nulla vitae elit libero, a pharetra augue. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+## About Me
+I am Bryan! I am from the Philippines. As a software engineer, I work remotely for a startup, which gives me the flexibility to work from anywhere. I absolutely love using Vim as my go-to text editor. It's efficient and helps me code faster.
 
-Nulla vitae elit libero, a pharetra augue. Cras mattis consectetur purus sit amet fermentum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+In my day-to-day work, I utilize a variety of technologies like Elixir, Phoenix, PostgreSQL, and Node.js. These tools allow me to build awesome software solutions and tackle exciting challenges.
 
-Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Vestibulum id ligula porta felis euismod semper. Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+Apart from coding. I have a range of interests that keep me entertained and inspired. I'm a big fan of anime, movies, and TV series, they provide me entertainment. Additionally, I'm a huge NBA enthusiast, eagerly following the thrilling basketball games.
+
+This website serves as a personal space where I document and remember all the things I learn along the way. It's a platform where I can share my experiences, insights, and learnings with others who are on a similar path. In simple terms this is a note with extra steps.
+
+
+## Personal Project
+I'm excited to share one of my projects with you called [GroceryBudget](https://grocerybudgetph.com) an innovative app designed to help you effectively manage your grocery budget. With GroceryBudget, you can effortlessly track your expenses, set spending limits, and stay on top of your grocery purchases. It provides a user-friendly interface that allows you to conveniently monitor your spending habits, identify areas for optimization, and make informed decisions while grocery shopping. Whether you're trying to save money or simply stay organized, GroceryBudget is here to make your grocery shopping experience efficient and cost-effective. Stay tuned for more updates and features coming soon!
+
