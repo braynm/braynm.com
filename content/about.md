@@ -10,7 +10,7 @@ In my day-to-day work, I utilize a variety of technologies like Elixir, Phoenix,
 
 Apart from coding. I have a range of interests that keep me entertained and inspired. I'm a big fan of anime, movies, and TV series, they provide me entertainment. Additionally, I'm a huge NBA enthusiast, eagerly following the thrilling basketball games.
 
-This website serves as a personal space where I document and remember all the things I learn along the way. It's a platform where I can share my experiences, insights, and learnings with others who are on a similar path. In simple terms this is a note with extra steps.
+This website serves as a personal space where I document and remember all the things I learn along the way. It's a platform where I can share my experiences, insights, and learnings.
 
 
 ## Personal Project
