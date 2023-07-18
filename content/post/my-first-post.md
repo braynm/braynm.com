@@ -1,7 +1,7 @@
 ---
 title: Markdown Syntax Guide
 date: 2023-07-16
-# hero: "/images/Shapes_1.png"
+hero: "/images/Shapes_1.png"
 excerpt: Sample article showcasing basic Markdown syntax and formatting for HTML elements.
 authors:
   - Bryan Madrid
