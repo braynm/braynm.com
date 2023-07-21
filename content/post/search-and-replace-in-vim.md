@@ -121,7 +121,7 @@ This will translates to:
 :%s/Eexterveenschekanaal/Jászfelsőszentgyörgy
 ```
 
-This is nice! Fewer stroke! We don't have to type these long words manually! It might save you lot of time for some typographical errors.
+This is nice! Fewer keystroke! We don't have to type these long words manually! It might save you lot of time for some typographical errors.
 
 ## Summary
 
