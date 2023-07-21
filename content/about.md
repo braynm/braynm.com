@@ -12,6 +12,7 @@ Apart from coding. I have a range of interests that keep me entertained and insp
 
 This website serves as a personal space where I document and remember all the things I learn along the way. It's a platform where I can share my experiences, insights, and learnings.
 
+you can contact me at hi@braynm.com
 
 ## Personal Project
 I'm excited to share one of my projects with you called [GroceryBudget](https://grocerybudgetph.com) an innovative app designed to help you effectively manage your grocery budget. With GroceryBudget, you can effortlessly track your expenses, set spending limits, and stay on top of your grocery purchases. It provides a user-friendly interface that allows you to conveniently monitor your spending habits, identify areas for optimization, and make informed decisions while grocery shopping. Whether you're trying to save money or simply stay organized, GroceryBudget is here to make your grocery shopping experience efficient and cost-effective. Stay tuned for more updates and features coming soon!
