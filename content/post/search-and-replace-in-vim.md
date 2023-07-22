@@ -1,6 +1,6 @@
 ---
 title: "Using Vim Substitute"
-date: 2023-07-22T17:18:55+08:00
+date: 2023-07-22T14:46:55+08:00
 draft: false
 hero: "/images/IMG_7774.jpg"
 excerpt: Exploring search and replace in Vim
