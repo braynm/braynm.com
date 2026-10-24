@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta name="generator" content="Hugo 0.115.3">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DCE3D3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#182017" media="(prefers-color-scheme: dark)">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('bg'); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+})();
+</script>
+<title>Bryan Madrid</title>
+<meta name="description" content="Bryan Madrid writes Elixir and TypeScript, builds with AI, and keeps notes here so he remembers what he learned.">
+<link rel="canonical" href="https://braynm.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bryan Madrid">
+<meta property="og:title" content="Bryan Madrid">
+<meta property="og:description" content="Bryan Madrid writes Elixir and TypeScript, builds with AI, and keeps notes here so he remembers what he learned.">
+<meta property="og:url" content="https://braynm.com/">
+<meta property="og:image" content="https://braynm.com/images/og/home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-page="home">
+<canvas id="bits" aria-hidden="true"></canvas>
+<a class="skip" href="#buf">Skip to content</a>
+<header class="top wrap">
+  <a class="path" href="/">~/braynm.com</a>
+  <nav aria-label="Site">
+    <a href="/post/">writing</a>
+    <a href="/about/">about</a>
+    <a href="https://github.com/braynm">github</a>
+    <button class="bg" id="bg-toggle" type="button">:set bg=dark</button>
+  </nav>
+</header>
+<main id="buf">
+<div class="buf home">
+  <div class="row nav hero-row" data-text="Bryan Madrid writes Elixir">
+    <h1 class="hero" aria-label="Bryan Madrid writes Elixir"><span class="sub">Bryan Madrid</span><span class="sub">writes <span id="hero-obj">Elixir</span><span class="blk" aria-hidden="true"></span></span></h1>
+    <p class="hero-cmd" aria-hidden="true" id="hero-cmd">&nbsp;</p>
+    <div class="dump" aria-hidden="true"><canvas></canvas></div>
+  </div>
+  <p class="row lede"><span class="comment"># </span>Software engineer from the <span class="str">Philippines</span>, working remotely for a startup. I write functional code in <span class="fn">Elixir</span> and <span class="fn">TypeScript</span>, across <span class="fn">Phoenix</span>, <span class="fn">React</span>, <span class="fn">Node.js</span> and <span class="fn">PostgreSQL</span>, build with <span class="fn">AI</span>, edit everything in <span class="kw">Vim</span>, and write here so I remember what I learned.</p>
+
+  <h2 class="helphead" id="writing"><span>WRITING</span><span class="tag">*braynm-writing*</span></h2>
+  <div class="row nav"><a class="entry" href="/post/how-i-ended-up-building-my-own-investing-app/"><time class="d" datetime="2026-10-24">2026-10-24</time><span class="t">How I Ended Up Building My Own Investing App<span class="x">From MP2 and Philippine REITs to Interactive Brokers, and the app I built to make sense of it all.</span></span><span class="go" aria-hidden="true">&lt;CR&gt; open</span></a></div>
+  <div class="row nav"><a class="entry" href="/post/search-and-replace-in-vim/"><time class="d" datetime="2023-07-22">2023-07-22</time><span class="t">Using Vim Substitute<span class="x">Exploring search and replace in Vim</span></span><span class="go" aria-hidden="true">&lt;CR&gt; open</span></a></div>
+  <div class="row nav"><a class="entry" href="/post/my-first-post/"><time class="d" datetime="2023-07-16">2023-07-16</time><span class="t">Welcome!<span class="x">My First Post</span></span><span class="go" aria-hidden="true">&lt;CR&gt; open</span></a></div>
+  <div class="row nav"><a class="explore" href="/post/">:Explore post/ <span class="comment">&ensp;3 files</span></a></div>
+
+  <h2 class="helphead" id="about"><span>ABOUT</span><span class="tag">*braynm-about*</span></h2>
+  <div class="row twocol">
+    <div><p>I'm Bryan. Elixir is my favorite language, TypeScript is my other one, and both get written in a functional style. Lately I build with AI too. Vim is my editor, and remote work lets me code from anywhere in the islands.</p></div>
+    <div><p class="comment"># off the clock</p><p>Anime, movies, a lot of TV, and the NBA. Always the NBA.</p><p>Lately, I've been into stocks, and it turned into <a href="/post/how-i-ended-up-building-my-own-investing-app/">building my own investing app</a>.</p></div>
+  </div>
+
+  <h2 class="helphead"><span>PROJECTS</span><span class="tag">*braynm-projects*</span></h2>
+  <div class="row nav" data-text="IBKR Screener [RO]"><a class="proj" href="/post/how-i-ended-up-building-my-own-investing-app/"><span class="t">IBKR Screener <span class="ro" title="Read-only: private, built for my own use">[RO]</span></span><span class="x">My own investing workspace on top of Interactive Brokers, with filings, fundamentals, charts, and order routing in one place. Private, built for my use only. Read how it started.</span></a></div>
+  <div class="row nav" data-text="GroceryBudget [abandoned]"><div class="proj gone"><span class="t">GroceryBudget <span class="ro" title="Abandoned: no longer maintained">[abandoned]</span></span><span class="x">Tracked grocery spending, set limits, and showed where the money went before you reached the checkout. No longer maintained, and the site is offline.</span></div></div>
+
+  <h2 class="helphead"><span>CONTACT</span><span class="tag">*braynm-contact*</span></h2>
+  <div class="row nav"><a class="contact" href="mailto:hi@braynm.com">hi@braynm.com</a></div>
+  <div class="row tilde" aria-hidden="true">~</div>
+</div>
+
+</main>
+<div class="status">
+  <div class="bar">
+    <span class="mode" id="mode">NORMAL</span>
+    <button class="key" type="button" data-key=":" aria-label="Open command line">:</button>
+    <button class="key" type="button" data-key="/" aria-label="Search this page">/</button>
+    <span class="file">~/braynm.com/index.md</span>
+    <span class="meta">utf-8 &nbsp; markdown &nbsp; <span id="pos">1:1</span></span>
+    <span class="pct" id="pct">Top</span>
+  </div>
+  <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">Press j or k to move, / to search, : for commands.</span></div>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DCE3D3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#182017" media="(prefers-color-scheme: dark)">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('bg'); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+})();
+</script>
+<title>About | Bryan Madrid</title>
+<meta name="description" content="Bryan Madrid writes Elixir and TypeScript, builds with AI, and keeps notes here so he remembers what he learned.">
+<link rel="canonical" href="https://braynm.com/about/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bryan Madrid">
+<meta property="og:title" content="About">
+<meta property="og:description" content="Bryan Madrid writes Elixir and TypeScript, builds with AI, and keeps notes here so he remembers what he learned.">
+<meta property="og:url" content="https://braynm.com/about/">
+<meta property="og:image" content="https://braynm.com/images/og/about.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-page="page">
+<canvas id="bits" aria-hidden="true"></canvas>
+<a class="skip" href="#buf">Skip to content</a>
+<header class="top wrap">
+  <a class="path" href="/">~/braynm.com</a><span class="crumb">/about.md</span>
+  <nav aria-label="Site">
+    <a href="/post/">writing</a>
+    <a href="/about/">about</a>
+    <a href="https://github.com/braynm">github</a>
+    <button class="bg" id="bg-toggle" type="button">:set bg=dark</button>
+  </nav>
+</header>
+<main id="buf">
+<article class="buf post">
+  <header class="row nav post-head" data-text="About">
+    <h1 class="title">About</h1>
+    
+  </header>
+  <div class="dump" aria-hidden="true"><canvas></canvas></div>
+  <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
+
+
+  <div class="prose" id="prose">
+    <h2 id="about-me"><span class="hash" aria-hidden="true">## </span>About Me</h2>
+<p>am Bryan! I am from the Philippines. I am a software engineer with 9 years of experience, I work remotely for a startup, which gives me the flexibility to work from anywhere. I absolutely love using Vim as my go-to text editor. It&rsquo;s efficient and helps me code faster. My favorite language is Elixir!</p>
+<p>In my day-to-day work, I utilize a variety of technologies like Elixir, Phoenix, PostgreSQL, Node.js, TypeScript, and React. These tools allow me to build awesome software solutions and tackle exciting challenges. I like writing code in a functional style, and lately I build with AI too.</p>
+<p>Apart from coding. I have a range of interests that keep me entertained and inspired. I&rsquo;m a big fan of anime, movies, and TV series, they provide me entertainment. Additionally, I&rsquo;m a huge NBA enthusiast, eagerly following the thrilling basketball games.</p>
+<p>Lately, I&rsquo;ve been into stocks. It started with Pag-IBIG MP2 and Philippine REITs, and it turned into <a href="/post/how-i-ended-up-building-my-own-investing-app/">building my own investing app</a>.</p>
+<p>This website serves as a personal space where I document and remember all the things I learn along the way. It&rsquo;s a platform where I can share my experiences, insights, and learnings.</p>
+<p>you can contact me at <strong><code>hi@braynm.com</code></strong></p>
+<h2 id="personal-project"><span class="hash" aria-hidden="true">## </span>Personal Project</h2>
+<p>I&rsquo;m excited to share one of my projects with you called <a href="https://grocerybudgetph.com">GroceryBudget</a> an innovative app designed to help you effectively manage your grocery budget. With GroceryBudget, you can effortlessly track your expenses, set spending limits, and stay on top of your grocery purchases. It provides a user-friendly interface that allows you to conveniently monitor your spending habits, identify areas for optimization, and make informed decisions while grocery shopping. Whether you&rsquo;re trying to save money or simply stay organized, GroceryBudget is here to make your grocery shopping experience efficient and cost-effective. Stay tuned for more updates and features coming soon!</p>
+
+  </div>
+
+  <footer class="eof">
+    <div class="row tilde" aria-hidden="true">~</div>
+    <div class="row tilde" aria-hidden="true">~</div>
+    <p class="row nav sign" data-text="hi@braynm.com">Written by Bryan Madrid, in Vim. Reply to <a href="mailto:hi@braynm.com">hi@braynm.com</a>.</p>
+  </footer>
+</article>
+
+</main>
+<div class="status">
+  <div class="bar">
+    <span class="mode" id="mode">NORMAL</span>
+    <button class="key" type="button" data-key=":" aria-label="Open command line">:</button>
+    <button class="key" type="button" data-key="/" aria-label="Search this page">/</button>
+    <span class="file">~/braynm.com/about.md</span>
+    <span class="meta">utf-8 &nbsp; markdown &nbsp; <span id="pos">1:1</span></span>
+    <span class="pct" id="pct">Top</span>
+  </div>
+  <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">&#34;about.md&#34; 19L, 1999B</span></div>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

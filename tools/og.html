@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>share card</title>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    background: #DCE3D3; color: #1E261C;
+    font-family: "Martian Mono", monospace; font-variation-settings: "wdth" 87.5;
+  }
+  .bits {
+    position: absolute; top: 24px; right: 40px; margin: 0;
+    font-size: 15px; line-height: 24px; color: #5F6B58; white-space: pre;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 70%), linear-gradient(transparent, #000 25%, #000 70%, transparent);
+    -webkit-mask-composite: source-in;
+    opacity: .5;
+  }
+  .page { position: absolute; left: 0; top: 0; right: 0; bottom: 64px; padding: 64px 360px 0 136px; }
+  .gutter { position: absolute; left: 64px; width: 48px; text-align: right; font-size: 18px; color: #5F6B58; }
+  .gutter b { color: #1E261C; }
+  .meta { font-size: 20px; color: #5F6B58; margin: 0 0 22px; white-space: pre; }
+  h1 {
+    margin: 0; font-weight: 700; letter-spacing: -.03em; line-height: 1.02;
+    font-variation-settings: "wdth" 75;
+  }
+  h1 .blk { display: inline-block; width: .5em; height: .88em; margin-left: .06em; vertical-align: -.08em; background: #1E261C; }
+  h1 .obj { color: #8B2F5E; }
+  .desc { margin: 26px 0 0; font-size: 22px; line-height: 1.5; color: #5F6B58; max-width: 34ch; }
+  .status { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; display: flex; font-size: 20px; line-height: 64px; background: #1E261C; color: #DCE3D3; }
+  .status .mode { background: #8B2F5E; color: #fff; font-weight: 700; padding: 0 22px; }
+  .status .file { flex: 1; padding: 0 22px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .status .meta2 { padding: 0 22px; color: #CBD5BF; }
+  .status .pct { background: #1D6A73; color: #fff; padding: 0 22px; }
+</style>
+</head>
+<body>
+<pre class="bits" id="bits"></pre>
+<div class="page">
+  <div class="gutter" id="gutter"></div>
+  <p class="meta" id="meta"></p>
+  <h1 id="title"></h1>
+  <p class="desc" id="desc"></p>
+</div>
+<div class="status">
+  <span class="mode">NORMAL</span>
+  <span class="file" id="file"></span>
+  <span class="meta2" id="type"></span>
+  <span class="pct">Top</span>
+</div>
+<script>
+const card = JSON.parse(decodeURIComponent(location.hash.slice(1)));
+const $ = id => document.getElementById(id);
+const title = $('title');
+
+if (card.home) {
+  title.innerHTML = 'Bryan Madrid<br>writes <span class="obj">Elixir</span><span class="blk"></span>';
+} else {
+  title.textContent = card.title;
+}
+$('meta').textContent = card.meta || '';
+$('desc').textContent = card.desc ? '# ' + card.desc : '';
+$('file').textContent = card.file;
+$('type').textContent = 'utf-8   ' + card.type;
+$('gutter').innerHTML = '<b>1</b>';
+
+const bytes = [...new TextEncoder().encode(card.title + '  ')];
+let rows = '';
+for (let r = 0; r < 24; r++) {
+  const row = [];
+  for (let j = 0; j < 3; j++) row.push(bytes[(r * 3 + j) % bytes.length].toString(2).padStart(8, '0'));
+  rows += row.join(' ') + '\n';
+}
+$('bits').textContent = rows;
+
+document.fonts.ready.then(() => {
+  let size = card.home ? 112 : 104;
+  title.style.fontSize = size + 'px';
+  const room = 630 - 64 - title.getBoundingClientRect().top - ($('desc').offsetHeight + 40);
+  while (title.offsetHeight > room && size > 48) title.style.fontSize = (size -= 4) + 'px';
+  document.body.dataset.ready = '1';
+});
+</script>
+</body>
+</html>

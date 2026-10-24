@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DCE3D3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#182017" media="(prefers-color-scheme: dark)">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('bg'); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+})();
+</script>
+<title>How I Ended Up Building My Own Investing App | Bryan Madrid</title>
+<meta name="description" content="How learning about money for my family led from Pag-IBIG MP2 and Philippine REITs to Interactive Brokers, and to building IBKR Screener, my own investing app.">
+<link rel="canonical" href="https://braynm.com/post/how-i-ended-up-building-my-own-investing-app/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Bryan Madrid">
+<meta property="og:title" content="How I Ended Up Building My Own Investing App">
+<meta property="og:description" content="How learning about money for my family led from Pag-IBIG MP2 and Philippine REITs to Interactive Brokers, and to building IBKR Screener, my own investing app.">
+<meta property="og:url" content="https://braynm.com/post/how-i-ended-up-building-my-own-investing-app/">
+<meta property="og:image" content="https://braynm.com/images/og/how-i-ended-up-building-my-own-investing-app.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-page="post">
+<canvas id="bits" aria-hidden="true"></canvas>
+<a class="skip" href="#buf">Skip to content</a>
+<header class="top wrap">
+  <a class="path" href="/">~/braynm.com</a><span class="crumb">/<a href="/post/">post</a>/how-i-ended-up-building-my-own-investing-app.md</span>
+  <nav aria-label="Site">
+    <a href="/post/">writing</a>
+    <a href="/about/">about</a>
+    <a href="https://github.com/braynm">github</a>
+    <button class="bg" id="bg-toggle" type="button">:set bg=dark</button>
+  </nav>
+</header>
+<main id="buf">
+<article class="buf post">
+  <header class="row nav post-head" data-text="How I Ended Up Building My Own Investing App">
+    <p class="info"><time datetime="2026-10-24">2026-10-24</time>&ensp; 3 min read &ensp; 522 words</p>
+    <h1 class="title">How I Ended Up Building My Own Investing App</h1>
+    <p class="excerpt"><span aria-hidden="true"># </span>From MP2 and Philippine REITs to Interactive Brokers, and the app I built to make sense of it all.</p>
+  </header>
+  <div class="dump" aria-hidden="true"><canvas></canvas></div>
+  <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
+
+
+  <div class="prose" id="prose">
+    <p>I started taking personal finance seriously in my 30s. I was starting a family and had a child to think about. I wanted to understand how to save and prepare for our future, but I didn’t know much about finance.</p>
+<p>Like many people, I started with YouTube and Facebook. Videos about saving and investing introduced me to Pag-IBIG MP2, which became one of my first steps beyond a regular savings account. From there, I became interested in Philippine REITs like RCR and AREIT. I began learning about dividends, share prices, and company disclosures.</p>
+<p>Each step gave me something else to look into. Eventually, I wondered whether I could invest in US companies from the Philippines. After researching brokers, funding, and fees, I found Interactive Brokers.</p>
+<p>Opening IBKR for the first time was overwhelming. There were panels, charts, order types, and settings I didn’t understand. I could access the market, but even finding my way around the platform took work.</p>
+<p>As I continued learning, I wanted a place where I could bring the information together in a way that made sense to me. I knew how to build software, so I started working on my own app.</p>
+<p>It’s called IBKR Screener. It connects to Interactive Brokers and brings screening, charts, research, and trade management into one workspace.</p>
+<p>The main features follow the things I want to understand before making a decision:</p>
+<ul>
+<li><strong>Filings:</strong> Read SEC disclosures to see what a company has reported, from financial results to offerings and ownership changes.</li>
+<li><strong>Indices:</strong> Explore companies in the S&amp;P 500 and Nasdaq-100, compare their performance, and see how different sectors are doing.</li>
+<li><strong>Fundamentals:</strong> Look at revenue, profitability, and valuation to understand the business behind the stock price.</li>
+<li><strong>Charts:</strong> Explore price and volume across timeframes, mark important levels, and compare views side by side.</li>
+<li><strong>Order routing:</strong> Send orders to Interactive Brokers from the app and track their status alongside my positions.</li>
+</ul>
+<p>News adds context, and the journal gives me a place to review my decisions afterward.</p>
+<p>That’s the part I wanted to connect: finding something interesting, understanding it, deciding what to do, and being able to look back afterward.</p>
+<p>The app is built with Elixir, Phoenix LiveView, and PostgreSQL. LiveView keeps the screens updated as market data arrives, and the IBKR integration connects it to my broker.</p>
+<p>I’ve also been exploring Claude Code while building it. AI assistance is a big part of how I’ve been able to cover this much ground. Building all of these features on my own would have taken much longer. This project has been a way to explore what I can build with that help, while still taking responsibility for understanding and checking the result.</p>
+<p>Building it for myself means I can adjust things as I go. If I keep looking for the same information, I can make it easier to find. If something takes too many steps, I can simplify it.</p>
+<p>I started this journey wanting to understand money better for my family. Somewhere along the way, it became a software project too. I’m still learning about the market, and now I have something I can keep improving as I learn.</p>
+
+  </div>
+
+  <footer class="eof">
+    <div class="row tilde" aria-hidden="true">~</div>
+    <div class="row tilde" aria-hidden="true">~</div>
+    <nav class="buffers" aria-label="More posts">
+      <a class="row nav buffer" href="/post/search-and-replace-in-vim/" data-text="Using Vim Substitute"><span class="cmd">:bprev</span> <span class="t">Using Vim Substitute</span></a>
+    </nav>
+    <p class="row nav sign" data-text="hi@braynm.com">Written by Bryan Madrid, in Vim. Reply to <a href="mailto:hi@braynm.com">hi@braynm.com</a>.</p>
+  </footer>
+</article>
+
+</main>
+<div class="status">
+  <div class="bar">
+    <span class="mode" id="mode">NORMAL</span>
+    <button class="key" type="button" data-key=":" aria-label="Open command line">:</button>
+    <button class="key" type="button" data-key="/" aria-label="Search this page">/</button>
+    <span class="file">~/braynm.com/post/how-i-ended-up-building-my-own-investing-app.md</span>
+    <span class="meta">utf-8 &nbsp; markdown &nbsp; <span id="pos">1:1</span></span>
+    <span class="pct" id="pct">Top</span>
+  </div>
+  <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">&#34;post/how-i-ended-up-building-my-own-investing-app.md&#34; 33L, 3178B</span></div>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

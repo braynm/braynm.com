@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DCE3D3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#182017" media="(prefers-color-scheme: dark)">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('bg'); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+})();
+</script>
+<title>Using Vim Substitute | Bryan Madrid</title>
+<meta name="description" content="Exploring search and replace in Vim">
+<link rel="canonical" href="https://braynm.com/post/search-and-replace-in-vim/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Bryan Madrid">
+<meta property="og:title" content="Using Vim Substitute">
+<meta property="og:description" content="Exploring search and replace in Vim">
+<meta property="og:url" content="https://braynm.com/post/search-and-replace-in-vim/">
+<meta property="og:image" content="https://braynm.com/images/og/search-and-replace-in-vim.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-page="post">
+<canvas id="bits" aria-hidden="true"></canvas>
+<a class="skip" href="#buf">Skip to content</a>
+<header class="top wrap">
+  <a class="path" href="/">~/braynm.com</a><span class="crumb">/<a href="/post/">post</a>/search-and-replace-in-vim.md</span>
+  <nav aria-label="Site">
+    <a href="/post/">writing</a>
+    <a href="/about/">about</a>
+    <a href="https://github.com/braynm">github</a>
+    <button class="bg" id="bg-toggle" type="button">:set bg=dark</button>
+  </nav>
+</header>
+<main id="buf">
+<article class="buf post">
+  <header class="row nav post-head" data-text="Using Vim Substitute">
+    <p class="info"><time datetime="2023-07-22">2023-07-22</time>&ensp; 3 min read &ensp; 569 words</p>
+    <h1 class="title">Using Vim Substitute</h1>
+    <p class="excerpt"><span aria-hidden="true"># </span>Exploring search and replace in Vim</p>
+  </header>
+  <div class="dump" aria-hidden="true"><canvas></canvas></div>
+  <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
+
+
+  <div class="prose" id="prose">
+    <h1 id="search-and-replace-in-vim"><span class="hash" aria-hidden="true"># </span>Search and Replace in Vim</h1>
+<p>In this article, we will explore how to use Vim&rsquo;s <strong>search</strong> and <strong>replace</strong> that <em>may</em> help us to edit efficiently.</p>
+<p><strong>Note:</strong> This article required a basic understanding of regular expression.</p>
+<p>Let&rsquo;s begin!</p>
+<h2 id="basic"><span class="hash" aria-hidden="true">## </span>Basic</h2>
+<p>See <code>:help substitute</code> to read documentation. The basic syntax for replacing text is:</p>
+<div class="code" data-lang="vim">
+  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"># <span class="nx">Replaces</span> `<span class="nx">hello</span>` <span class="nx">with</span> `<span class="nx">world</span>`<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="p">:</span><span class="nx">s</span><span class="sr">/hello/</span><span class="nx">world</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span># <span class="nx">hello</span> <span class="p">-&gt;</span> <span class="nx">world</span></span></span></code></pre></div>
+</div>
+<p>Here is another example of changing delimiter of <code>csv</code> file from <strong><code>,</code></strong> to <strong><code>t</code></strong></p>
+<p>change delimiter:
+<figure class="vid">
+  <video controls playsinline preload="auto">
+    <source src="/videos/blog-video-1.mp4" type="video/mp4">
+  </video>
+  <figcaption>blog-video-1.mp4</figcaption>
+</figure>
+</p>
+<h2 id="capitalizing-words"><span class="hash" aria-hidden="true">## </span>Capitalizing Words</h2>
+<p>You might think, I can just type it manually since there are only 4 words. What
+if there are <strong>thousands</strong> of rows. We will <strong>not</strong> <em>edit</em> manually. It will be time consuming.</p>
+<p>So here comes the <code>substite</code> comes handy. It support patterns to make things <em>easier</em>.</p>
+<p>Capitalize words on every row:
+<figure class="vid">
+  <video controls playsinline preload="auto">
+    <source src="/videos/blog-video-2.mp4" type="video/mp4">
+  </video>
+  <figcaption>blog-video-2.mp4</figcaption>
+</figure>
+</p>
+<p>Pretty neat!</p>
+<p>Let&rsquo;s break down the command:</p>
+<div class="code" data-lang="vim">
+  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="p">:</span>%<span class="nx">s</span><span class="sr">/\a\+/</span>\<span class="nx">u</span>&amp;/<span class="nx">g</span></span></span></code></pre></div>
+</div>
+<ul>
+<li><code>%s</code> - Targets all the lines in the file to perform substitution.</li>
+<li><code>\a</code> - Matches alphabetic character.</li>
+<li><code>\+</code> - Matches 1 or more of the preceding atom, as many as possible.</li>
+<li><code>\u</code> - Uppercase the match.</li>
+<li><code>&amp;</code> - Reuse the flags from the previous substitute command.</li>
+<li><code>g</code> - Replace all matches in the line.</li>
+</ul>
+<p>This can be more clear by using <code>magic</code> mode, by adding <code>\v</code> in front of <code>{pattern}</code></p>
+<div class="code" data-lang="vim">
+  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="p">:</span>%<span class="nx">s</span><span class="sr">/\v\a+/</span>\<span class="nx">u</span>&amp;/<span class="nx">g</span></span></span></code></pre></div>
+</div>
+<p>This is helpful when your pattern is long, it makes the pattern more <strong>readable</strong>. To learn more about <code>magic</code> you can use <code>:help magic</code> in Vim.</p>
+<h1 id="name-initials"><span class="hash" aria-hidden="true"># </span>Name Initials</h1>
+<p>We can also make name initials: <code>Michael Scott -&gt; M. Scott or M.S.</code></p>
+<div class="code" data-lang="vim">
+  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl">%<span class="nx">s</span><span class="sr">/\v(&lt;.)(\a+)/</span>\<span class="nx">u</span>\<span class="m">1</span>.</span></span></code></pre></div>
+</div>
+<figure class="vid">
+  <video controls playsinline preload="auto">
+    <source src="/videos/blog-video-2.1.mp4" type="video/mp4">
+  </video>
+  <figcaption>blog-video-2.1.mp4</figcaption>
+</figure>
+
+<h2 id="swapping-words"><span class="hash" aria-hidden="true">## </span>Swapping Words</h2>
+<p>Let&rsquo;s say we need to change the formatting of name, we need to follow this format: <code>Last Name, First Name</code>. We can use captures to do this.</p>
+<figure class="vid">
+  <video controls playsinline preload="auto">
+    <source src="/videos/blog-video-3.mp4" type="video/mp4">
+  </video>
+  <figcaption>blog-video-3.mp4</figcaption>
+</figure>
+
+<h2 id="using-registers"><span class="hash" aria-hidden="true">## </span>Using Registers</h2>
+<p>So first, what is <code>&quot;register&quot;</code> in Vim?</p>
+<blockquote>
+<p>Is a storage space where text can be yanked (copied) or put (pasted). It&rsquo;s like a clipboard or buffer where you can temporarily store pieces of text. Registers allow you to manipulate and transfer text in various ways within Vim.</p>
+</blockquote>
+<p>You can open your register by running  <code>:registers</code></p>
+<p>So we have list of places:</p>
+<div class="code" data-lang="csv">
+  <div class="code-bar"><span>[csv]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
+  <pre tabindex="0"><code class="language-csv" data-lang="csv">Yamagawaokachiyogamizu
+Eexterveenschekanaal
+Jászfelsőszentgyörgy</code></pre>
+</div>
+<p>We need to replace <strong>Yamagawaokachiyogamizu</strong> with <strong>Jászfelsőszentgyörgy</strong>:
+<figure class="vid">
+  <video controls playsinline preload="auto">
+    <source src="/videos/blog-video-4.mp4" type="video/mp4">
+  </video>
+  <figcaption>blog-video-4.mp4</figcaption>
+</figure>
+</p>
+<p>Let&rsquo;s see what&rsquo;s happening step-by-step:</p>
+<ul>
+<li>Select Yamagawaokachiyogamizu</li>
+<li>Save <code>Yamagawaokachiyogamizu</code> to <strong><code>&quot;a</code></strong> register</li>
+<li>Save <code>Jászfelsőszentgyörgy</code> to <strong><code>&quot;b</code></strong> register</li>
+<li>Run substitute command: <code>%:s/&lt;C-r&gt;a/&lt;C-r&gt;b</code></li>
+</ul>
+<p><code>&lt;C-r&gt; {register} (e.g. &lt;C-r&gt;b)</code> — Insert the contents of a numbered or named register.</p>
+<p>This will translates to:</p>
+<div class="code" data-lang="vim">
+  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="p">:</span>%<span class="nx">s</span><span class="sr">/Eexterveenschekanaal/</span>Jászfelsőszentgyörgy</span></span></code></pre></div>
+</div>
+<p>This is nice! Fewer keystroke! We don&rsquo;t have to type these long words manually! It might save you lot of time for some typographical errors.</p>
+<h2 id="summary"><span class="hash" aria-hidden="true">## </span>Summary</h2>
+<ul>
+<li>Efficient Text Editing: Vim&rsquo;s substitute command (:s) allows you to replace specific occurrences of text throughout your document fast and accurately.</li>
+<li>Targeted replacements: With various search patterns and flags, you can perform precise and targeted replacements, avoiding unintended changes.</li>
+<li>Backreferences: Leveraging backreferences (\1, \2, etc.), you can refer to captured groups in your search pattern and use them in the replacement, facilitating dynamic and personalized substitutions.</li>
+<li>Time-saving Editing Workflow: With the flexibility and power of Vim&rsquo;s substitute command, you can optimize your editing workflow, saving time and increasing productivity in your daily text-editing tasks.</li>
+</ul>
+<p>We learned that <code>substite</code> is a powerful tool. Mastering regex can be hard, I personally use <a href="https://regexr.com/">regexr</a> when dealing with regex patterns. It break down patterns with each explanation on what it does.</p>
+<p>That&rsquo;s all for now.</p>
+<p>Thanks!</p>
+
+  </div>
+
+  <footer class="eof">
+  <figure class="row nav photo" data-text="IMG_7774.jpg">
+    <img src="/images/IMG_7774.jpg" width="1600" height="900" alt="" decoding="async">
+    <figcaption>IMG_7774.jpg&ensp;1600&times;900</figcaption>
+  </figure>
+    <div class="row tilde" aria-hidden="true">~</div>
+    <div class="row tilde" aria-hidden="true">~</div>
+    <nav class="buffers" aria-label="More posts">
+      <a class="row nav buffer" href="/post/my-first-post/" data-text="Welcome!"><span class="cmd">:bprev</span> <span class="t">Welcome!</span></a>
+      <a class="row nav buffer" href="/post/how-i-ended-up-building-my-own-investing-app/" data-text="How I Ended Up Building My Own Investing App"><span class="cmd">:bnext</span> <span class="t">How I Ended Up Building My Own Investing App</span></a>
+    </nav>
+    <p class="row nav sign" data-text="hi@braynm.com">Written by Bryan Madrid, in Vim. Reply to <a href="mailto:hi@braynm.com">hi@braynm.com</a>.</p>
+  </footer>
+</article>
+
+</main>
+<div class="status">
+  <div class="bar">
+    <span class="mode" id="mode">NORMAL</span>
+    <button class="key" type="button" data-key=":" aria-label="Open command line">:</button>
+    <button class="key" type="button" data-key="/" aria-label="Search this page">/</button>
+    <span class="file">~/braynm.com/post/search-and-replace-in-vim.md</span>
+    <span class="meta">utf-8 &nbsp; markdown &nbsp; <span id="pos">1:1</span></span>
+    <span class="pct" id="pct">Top</span>
+  </div>
+  <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">&#34;post/search-and-replace-in-vim.md&#34; 130L, 4334B</span></div>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

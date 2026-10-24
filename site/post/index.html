@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DCE3D3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#182017" media="(prefers-color-scheme: dark)">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('bg'); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+})();
+</script>
+<title>Writing | Bryan Madrid</title>
+<meta name="description" content="Everything Bryan Madrid has written, newest first.">
+<link rel="canonical" href="https://braynm.com/post/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bryan Madrid">
+<meta property="og:title" content="Writing">
+<meta property="og:description" content="Everything Bryan Madrid has written, newest first.">
+<meta property="og:url" content="https://braynm.com/post/">
+<meta property="og:image" content="https://braynm.com/images/og/post.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-page="list">
+<canvas id="bits" aria-hidden="true"></canvas>
+<a class="skip" href="#buf">Skip to content</a>
+<header class="top wrap">
+  <a class="path" href="/">~/braynm.com</a><span class="crumb">/post/</span>
+  <nav aria-label="Site">
+    <a href="/post/">writing</a>
+    <a href="/about/">about</a>
+    <a href="https://github.com/braynm">github</a>
+    <button class="bg" id="bg-toggle" type="button">:set bg=dark</button>
+  </nav>
+</header>
+<main id="buf">
+
+<div class="buf netrw">
+  <h1 class="sr-only">Writing</h1>
+  <div class="head" aria-hidden="true">
+    <div class="rule">" ========================================================================================================================================================================================================</div>
+    <div>" Netrw Directory Listing</div>
+    <div>"   ~/braynm.com/post</div>
+    <div>"   Sorted by&ensp;&ensp;<span class="sorted" id="sorted">time</span></div>
+    <div>"   Quick Help: j/k move &ensp;&lt;CR&gt; open &ensp;s sort &ensp;- go up &ensp;/ search</div>
+    <div class="rule">" ========================================================================================================================================================================================================</div>
+  </div>
+
+  <ol class="entries" id="entries">
+    <li class="row nav up" data-text="../"><a href="/">../</a></li>
+    <li class="row nav entry" data-text="How I Ended Up Building My Own Investing App" data-time="1792803600" data-name="how-i-ended-up-building-my-own-investing-app" data-size="522">
+      <a href="/post/how-i-ended-up-building-my-own-investing-app/">
+        <span class="fname">how-i-ended-up-building-my-own-investing-app.md</span>
+        <span class="t">How I Ended Up Building My Own Investing App</span>
+        <span class="x">From MP2 and Philippine REITs to Interactive Brokers, and the app I built to make sense of it all.</span>
+      </a>
+      <time class="d" datetime="2026-10-24">2026-10-24</time>
+      <span class="sz">3 min</span>
+    </li>
+    <li class="row nav entry" data-text="Using Vim Substitute" data-time="1690008415" data-name="search-and-replace-in-vim" data-size="569">
+      <a href="/post/search-and-replace-in-vim/">
+        <span class="fname">search-and-replace-in-vim.md</span>
+        <span class="t">Using Vim Substitute</span>
+        <span class="x">Exploring search and replace in Vim</span>
+      </a>
+      <time class="d" datetime="2023-07-22">2023-07-22</time>
+      <span class="sz">3 min</span>
+    </li>
+    <li class="row nav entry" data-text="Welcome!" data-time="1689465600" data-name="my-first-post" data-size="130">
+      <a href="/post/my-first-post/">
+        <span class="fname">my-first-post.md</span>
+        <span class="t">Welcome!</span>
+        <span class="x">My First Post</span>
+      </a>
+      <time class="d" datetime="2023-07-16">2023-07-16</time>
+      <span class="sz">1 min</span>
+    </li>
+  </ol>
+  <div class="row tilde" aria-hidden="true">~</div>
+  <div class="row tilde" aria-hidden="true">~</div>
+</div>
+
+</main>
+<div class="status">
+  <div class="bar">
+    <span class="mode" id="mode">NORMAL</span>
+    <button class="key" type="button" data-key=":" aria-label="Open command line">:</button>
+    <button class="key" type="button" data-key="/" aria-label="Search this page">/</button>
+    <span class="file">~/braynm.com/post/</span>
+    <span class="meta">utf-8 &nbsp; netrw &nbsp; <span id="pos">1:1</span></span>
+    <span class="pct" id="pct">Top</span>
+  </div>
+  <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">&#34;post/&#34; 3 files</span></div>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

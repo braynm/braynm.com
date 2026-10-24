@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DCE3D3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#182017" media="(prefers-color-scheme: dark)">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('bg'); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+})();
+</script>
+<title>404 Page not found | Bryan Madrid</title>
+<meta name="description" content="Bryan Madrid writes Elixir and TypeScript, builds with AI, and keeps notes here so he remembers what he learned.">
+<link rel="canonical" href="https://braynm.com/404.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bryan Madrid">
+<meta property="og:title" content="404 Page not found">
+<meta property="og:description" content="Bryan Madrid writes Elixir and TypeScript, builds with AI, and keeps notes here so he remembers what he learned.">
+<meta property="og:url" content="https://braynm.com/404.html">
+<meta property="og:image" content="https://braynm.com/images/og/home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-page="page">
+<canvas id="bits" aria-hidden="true"></canvas>
+<a class="skip" href="#buf">Skip to content</a>
+<header class="top wrap">
+  <a class="path" href="/">~/braynm.com</a>
+  <nav aria-label="Site">
+    <a href="/post/">writing</a>
+    <a href="/about/">about</a>
+    <a href="https://github.com/braynm">github</a>
+    <button class="bg" id="bg-toggle" type="button">:set bg=dark</button>
+  </nav>
+</header>
+<main id="buf">
+
+<div class="buf post">
+  <header class="row nav post-head" data-text="E484: Can't open file">
+    <p class="info">404</p>
+    <h1 class="title">E484: Can't open file</h1>
+    <p class="excerpt"><span aria-hidden="true"># </span>Nothing lives at this address. It may have moved when the site was rebuilt.</p>
+  </header>
+  <div class="dump" aria-hidden="true"><canvas></canvas></div>
+  <div class="prose" id="prose">
+    <p><a href="/post/">:Explore post/</a> lists every post, and <a href="/">:e ~</a> goes home.</p>
+  </div>
+</div>
+
+</main>
+<div class="status">
+  <div class="bar">
+    <span class="mode" id="mode">NORMAL</span>
+    <button class="key" type="button" data-key=":" aria-label="Open command line">:</button>
+    <button class="key" type="button" data-key="/" aria-label="Search this page">/</button>
+    <span class="file">~/braynm.com/[No Name]</span>
+    <span class="meta">utf-8 &nbsp; markdown &nbsp; <span id="pos">1:1</span></span>
+    <span class="pct" id="pct">Top</span>
+  </div>
+  <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">E484: Can&#39;t open file</span></div>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

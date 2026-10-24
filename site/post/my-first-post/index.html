@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DCE3D3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#182017" media="(prefers-color-scheme: dark)">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('bg'); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+})();
+</script>
+<title>Welcome! | Bryan Madrid</title>
+<meta name="description" content="My First Post">
+<link rel="canonical" href="https://braynm.com/post/my-first-post/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Bryan Madrid">
+<meta property="og:title" content="Welcome!">
+<meta property="og:description" content="My First Post">
+<meta property="og:url" content="https://braynm.com/post/my-first-post/">
+<meta property="og:image" content="https://braynm.com/images/og/my-first-post.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-page="post">
+<canvas id="bits" aria-hidden="true"></canvas>
+<a class="skip" href="#buf">Skip to content</a>
+<header class="top wrap">
+  <a class="path" href="/">~/braynm.com</a><span class="crumb">/<a href="/post/">post</a>/my-first-post.md</span>
+  <nav aria-label="Site">
+    <a href="/post/">writing</a>
+    <a href="/about/">about</a>
+    <a href="https://github.com/braynm">github</a>
+    <button class="bg" id="bg-toggle" type="button">:set bg=dark</button>
+  </nav>
+</header>
+<main id="buf">
+<article class="buf post">
+  <header class="row nav post-head" data-text="Welcome!">
+    <p class="info"><time datetime="2023-07-16">2023-07-16</time>&ensp; 1 min read &ensp; 130 words</p>
+    <h1 class="title">Welcome!</h1>
+    <p class="excerpt"><span aria-hidden="true"># </span>My First Post</p>
+  </header>
+  <div class="dump" aria-hidden="true"><canvas></canvas></div>
+  <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
+
+
+  <div class="prose" id="prose">
+    <h3 id="hi"><span class="hash" aria-hidden="true">### </span>Hi!</h3>
+<p>Welcome to my Blog! This is my first post. It’s been a while since I write on my blog.</p>
+<p>I revamped and decided to blog again So I can retain information I learn. I tend to forget things 😅 (so many things to learn! I can’t keep up). So now, I can now practice writing and retain information. Kill two birds with one stone! Hope I can make writing a habit!</p>
+<p>My previous blog used <code>Hugo</code>, tried using other tools for this new Blog but I am more familiar with Hugo and it’s simple to use. I deploy it on <code>Cloudflare</code>, I connected my <code>GitHub</code> repo and it’s automatically deployed when I push on my <code>main</code> branch.</p>
+<h3 id="resources"><span class="hash" aria-hidden="true">### </span>Resources</h3>
+<ul>
+<li><a href="https://gohugo.io/">https://gohugo.io/</a></li>
+<li><a href="https://www.cloudflare.com/">https://www.cloudflare.com/</a></li>
+<li><a href="https://github.com/">https://github.com/</a></li>
+<li><a href="https://github.com/forestryio/hugo-theme-novela">https://github.com/forestryio/hugo-theme-novela</a></li>
+</ul>
+<p> That’s all for now.</p>
+<p>Thanks!</p>
+
+  </div>
+
+  <footer class="eof">
+  <figure class="row nav photo" data-text="dji_fly_20230213_135944_6_1676346989719_photo_optimized.jpg">
+    <img src="/images/dji_fly_20230213_135944_6_1676346989719_photo_optimized.jpg" width="1600" height="900" alt="" decoding="async">
+    <figcaption>dji_fly_20230213_135944_6_1676346989719_photo_optimized.jpg&ensp;1600&times;900</figcaption>
+  </figure>
+    <div class="row tilde" aria-hidden="true">~</div>
+    <div class="row tilde" aria-hidden="true">~</div>
+    <nav class="buffers" aria-label="More posts">
+      <a class="row nav buffer" href="/post/search-and-replace-in-vim/" data-text="Using Vim Substitute"><span class="cmd">:bnext</span> <span class="t">Using Vim Substitute</span></a>
+    </nav>
+    <p class="row nav sign" data-text="hi@braynm.com">Written by Bryan Madrid, in Vim. Reply to <a href="mailto:hi@braynm.com">hi@braynm.com</a>.</p>
+  </footer>
+</article>
+
+</main>
+<div class="status">
+  <div class="bar">
+    <span class="mode" id="mode">NORMAL</span>
+    <button class="key" type="button" data-key=":" aria-label="Open command line">:</button>
+    <button class="key" type="button" data-key="/" aria-label="Search this page">/</button>
+    <span class="file">~/braynm.com/post/my-first-post.md</span>
+    <span class="meta">utf-8 &nbsp; markdown &nbsp; <span id="pos">1:1</span></span>
+    <span class="pct" id="pct">Top</span>
+  </div>
+  <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">&#34;post/my-first-post.md&#34; 20L, 803B</span></div>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>
