@@ -208,6 +208,20 @@ figure { margin: 0; }
 .photo.drawn.revealed img { visibility: visible; animation: redraw 0.5s steps(14) both; }
 .photo.drawn.revealed .ascii { visibility: hidden; }
 .photo.drawn:not(.revealed) .ascii.printing { animation: redraw 0.9s steps(24) both; }
+/* About: the map floats beside the title; lines next to it narrow instead of running under it */
+.post > .photo.map { float: right; width: clamp(7.5rem, 36vw, 15rem); margin: 0 0 24px 24px; }
+.post:has(> .map) .row { display: flow-root; }
+.post:has(> .map) :is(.dump, .folds) { overflow: hidden; }
+/* Manila, placed where the PNG's dot is; the drawing's own plum is too muddy to find */
+.map .flip { position: relative; }
+.map .flip::after {
+  content: "*"; position: absolute; left: 41.8%; top: 39.5%; translate: -50% -42%;
+  color: var(--plum); font: 800 1.25rem/1 var(--mono);
+}
+@media (max-width: 720px) {
+  .post > .photo.map { width: clamp(6.5rem, 30vw, 9rem); margin-left: 12px; }
+  .post:has(> .map) .prose { clear: right; }
+}
 .photo figcaption { overflow-wrap: anywhere; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; }
 .photo .hint { color: var(--teal); }
 figcaption { margin-top: 10px; color: var(--dim); font: 400 0.75rem/1.6 var(--mono); font-variation-settings: "wdth" 87.5; }

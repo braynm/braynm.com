@@ -39,6 +39,8 @@ const pick = v => {
 async function draw(fig, img, cv, opts) {
   const width = fig.clientWidth;
   if (!width || !img.naturalWidth) return;
+  // A data-mask figure is a transparent picture (the About map): opacity is the tone, in either theme.
+  const mask = 'mask' in fig.dataset;
   const size = width < 500 ? 6 : 8;
   const font = `600 ${size}px "Martian Mono"`;
   await document.fonts.load(font);
@@ -63,27 +65,31 @@ async function draw(fig, img, cv, opts) {
   sg.drawImage(img, 0, 0, sw, sh);
   const px = sg.getImageData(0, 0, sw, sh).data;
   const L = new Float32Array(sw * sh);
-  for (let i = 0; i < L.length; i++) L[i] = (0.2126 * px[i * 4] + 0.7152 * px[i * 4 + 1] + 0.0722 * px[i * 4 + 2]) / 255;
+  for (let i = 0; i < L.length; i++) L[i] = mask ? px[i * 4 + 3] / 255 : (0.2126 * px[i * 4] + 0.7152 * px[i * 4 + 1] + 0.0722 * px[i * 4 + 2]) / 255;
   const at = (x, y) => L[y * sw + x];
 
   const n = cols * rows;
   const tone = new Float32Array(n);
   const rgb = new Float32Array(n * 3);
+  const cover = new Float32Array(n);
   const mag = new Float32Array(n);
   const ang = new Float32Array(n);
   for (let c = 0; c < n; c++) {
     const x = c % cols;
     const y = Math.floor(c / cols);
     let best = 0;
+    let opaque = 0;
     for (let dy = 0; dy < 2; dy++) {
       for (let dx = 0; dx < 2; dx++) {
         const sx = x * 2 + dx;
         const sy = y * 2 + dy;
         const i = sy * sw + sx;
+        const a = px[i * 4 + 3];
         tone[c] += L[i] / 4;
-        rgb[c * 3] += px[i * 4] / 4;
-        rgb[c * 3 + 1] += px[i * 4 + 1] / 4;
-        rgb[c * 3 + 2] += px[i * 4 + 2] / 4;
+        opaque += a;
+        rgb[c * 3] += px[i * 4] * a;
+        rgb[c * 3 + 1] += px[i * 4 + 1] * a;
+        rgb[c * 3 + 2] += px[i * 4 + 2] * a;
         if (sx < 1 || sy < 1 || sx >= sw - 1 || sy >= sh - 1) continue;
         const gx = at(sx + 1, sy - 1) + 2 * at(sx + 1, sy) + at(sx + 1, sy + 1) - at(sx - 1, sy - 1) - 2 * at(sx - 1, sy) - at(sx - 1, sy + 1);
         const gy = at(sx - 1, sy + 1) + 2 * at(sx, sy + 1) + at(sx + 1, sy + 1) - at(sx - 1, sy - 1) - 2 * at(sx, sy - 1) - at(sx + 1, sy - 1);
@@ -92,6 +98,9 @@ async function draw(fig, img, cv, opts) {
       }
     }
     mag[c] = best;
+    // Color is averaged over the opaque part of the cell, so a coast is not darkened by the empty sea.
+    cover[c] = opaque / (4 * 255);
+    if (opaque) for (let k = 0; k < 3; k++) rgb[c * 3 + k] /= opaque;
   }
 
   // Half histogram equalization, half linear stretch: spreads tones without posterizing.
@@ -121,14 +130,14 @@ async function draw(fig, img, cv, opts) {
   if (opts.wash) {
     // A faint wash of the photo's own color behind each cell carries the shapes; the glyphs draw over it.
     for (let c = 0; c < n; c++) {
-      g.fillStyle = `rgba(${rgb[c * 3] | 0},${rgb[c * 3 + 1] | 0},${rgb[c * 3 + 2] | 0},${opts.wash})`;
+      g.fillStyle = `rgba(${rgb[c * 3] | 0},${rgb[c * 3 + 1] | 0},${rgb[c * 3 + 2] | 0},${opts.wash * cover[c]})`;
       g.fillRect((c % cols) * cw, Math.floor(c / cols) * lh, cw + 0.5, lh + 0.5);
     }
   }
   for (let c = 0; c < n; c++) {
     const lin = Math.min(1, Math.max(0, (tone[c] - lo) / (hi - lo || 1)));
     const t = 0.5 * rank(tone[c]) + 0.5 * lin;
-    const v = dark ? t : 1 - t;
+    const v = mask ? tone[c] : dark ? t : 1 - t;
     if (v < 0.06) continue;
     let ch;
     if (opts.edges && mag[c] >= edgeCut && mag[c] > 0.35) {
@@ -153,20 +162,24 @@ async function draw(fig, img, cv, opts) {
 export function initAscii(ed, opts = {edges: true, color: 'true', wash: 0.4}, figs = document.querySelectorAll('figure.photo')) {
   figs.forEach(fig => {
     const img = fig.querySelector('img');
+    const kind = 'mask' in fig.dataset ? 'map' : 'photo';
     const cv = document.createElement('canvas');
     cv.className = 'ascii';
     cv.setAttribute('aria-hidden', 'true');
     const flip = document.createElement('button');
     flip.type = 'button';
     flip.className = 'flip';
-    flip.setAttribute('aria-label', 'Show the photo');
+    flip.setAttribute('aria-label', `Show the ${kind}`);
     flip.setAttribute('aria-pressed', 'false');
     img.replaceWith(flip);
     flip.append(cv, img);
-    const hint = document.createElement('span');
-    hint.className = 'hint';
-    hint.textContent = 'Click the drawing to see the photo';
-    fig.querySelector('figcaption')?.append(hint);
+    // The map sits beside the About title, where a hint would crowd it.
+    const hint = kind === 'photo' ? document.createElement('span') : null;
+    if (hint) {
+      hint.className = 'hint';
+      hint.textContent = `Click the drawing to see the ${kind}`;
+      fig.querySelector('figcaption')?.append(hint);
+    }
 
     const render = () => draw(fig, img, cv, opts);
     const ready = img.complete ? Promise.resolve() : new Promise(r => img.addEventListener('load', r, {once: true}));
@@ -182,8 +195,8 @@ export function initAscii(ed, opts = {edges: true, color: 'true', wash: 0.4}, fi
     flip.addEventListener('click', () => {
       const on = fig.classList.toggle('revealed');
       flip.setAttribute('aria-pressed', String(on));
-      flip.setAttribute('aria-label', on ? 'Show the drawing' : 'Show the photo');
-      hint.textContent = on ? 'Click the photo to go back to the drawing' : 'Click the drawing to see the photo';
+      flip.setAttribute('aria-label', on ? 'Show the drawing' : `Show the ${kind}`);
+      if (hint) hint.textContent = on ? `Click the ${kind} to go back to the drawing` : `Click the drawing to see the ${kind}`;
       ed.say(on ? `:r ${fig.dataset.text}` : `"${fig.dataset.text}" drawn in Vim commands`);
     });
 
