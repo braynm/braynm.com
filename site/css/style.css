@@ -90,6 +90,7 @@ header.top .bg:hover, header.top .bg:focus-visible { color: var(--plum); text-de
 .row { position: relative; }
 .row::before {
   content: attr(data-ln);
+  content: attr(data-ln) / "";
   position: absolute; left: calc(-1 * var(--gutter)); top: var(--ln-top, 0.2em);
   width: calc(var(--gutter) - 16px); text-align: right;
   font: 400 0.75rem/1.7 var(--mono); font-variation-settings: "wdth" 87.5;
@@ -120,7 +121,6 @@ header.top .bg:hover, header.top .bg:focus-visible { color: var(--plum); text-de
 html:not(.has-sides) .dump { display: block; }
 
 /* ---------- home ---------- */
-.hero-row { --ln-top: 0.6em; }
 h1.hero {
   margin: 0;
   font-size: clamp(2rem, 1rem + 4.8vw, 6rem); line-height: 1.02; letter-spacing: -0.03em;
@@ -133,6 +133,8 @@ h1.hero .sub { display: block; }
 @keyframes blink { 50% { opacity: 0; } }
 .hero-cmd { margin: 28px 0 0; min-height: 1.5em; font-size: 0.875rem; color: var(--dim); }
 .hero-cmd b { color: var(--ink); }
+.hero-cmd .caret, .cmdline .caret { display: inline-block; width: 0.6em; height: 1.15em; vertical-align: -0.22em; background: var(--ink); }
+.hero-row.typing .blk { visibility: hidden; }
 .lede { max-width: 56ch; margin: 40px 0 0; font-size: 0.9375rem; line-height: 1.75; }
 
 .helphead {
@@ -164,7 +166,7 @@ a.proj:hover .t { color: var(--plum); }
 .contact:hover { color: var(--plum); }
 
 /* ---------- post ---------- */
-.post-head { --ln-top: 2.4em; padding-bottom: 8px; }
+.post-head { padding-bottom: 8px; }
 .post-head .info { margin: 0 0 16px; color: var(--dim); font-size: 0.75rem; }
 .post-head .title {
   margin: 0;
@@ -204,7 +206,7 @@ figure { margin: 0; }
 .photo .ascii .o { color: var(--ochre); }
 .photo .ascii .p { color: var(--plum); }
 .photo .ascii .d { color: var(--dim); }
-.photo.drawn img { visibility: hidden; }
+.photo .flip img { visibility: hidden; }
 .photo.drawn.revealed img { visibility: visible; animation: redraw 0.5s steps(14) both; }
 .photo.drawn.revealed .ascii { visibility: hidden; }
 .photo.drawn:not(.revealed) .ascii.printing { animation: redraw 0.9s steps(24) both; }
@@ -215,7 +217,7 @@ figure { margin: 0; }
 /* Manila, placed where the PNG's dot is; the drawing's own plum is too muddy to find */
 .map .flip { position: relative; cursor: default; }
 .map .flip::after {
-  content: "*"; position: absolute; left: 41.8%; top: 39.5%; translate: -50% -42%;
+  content: "*"; content: "*" / ""; position: absolute; left: 41.8%; top: 39.5%; translate: -50% -42%;
   color: var(--plum); font: 800 1.25rem/1 var(--mono);
 }
 @media (max-width: 720px) {
@@ -232,9 +234,7 @@ figcaption { margin-top: 10px; color: var(--dim); font: 400 0.75rem/1.6 var(--mo
   font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem); line-height: 1.7;
 }
 .prose > * { margin: 0 0 1.1em; }
-.prose > .row { --ln-top: 0.35em; }
 .prose h1, .prose h2, .prose h3 {
-  --ln-top: 0.5em;
   margin: 2.2em 0 0.6em;
   font: 700 clamp(1.25rem, 1rem + 1vw, 1.75rem)/1.25 var(--mono); font-variation-settings: "wdth" 75;
   letter-spacing: -0.02em;
@@ -296,7 +296,7 @@ figcaption { margin-top: 10px; color: var(--dim); font: 400 0.75rem/1.6 var(--mo
 .netrw .head .sorted { color: var(--plum); }
 .entries { list-style: none; margin: 24px 0 8px; padding: 0; }
 .entries .up a { display: inline-block; padding: 8px 0; color: var(--teal); text-decoration: none; }
-.entries .entry { display: grid; grid-template-columns: 1fr auto; gap: 4px 32px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid var(--line); --ln-top: 1.6em; }
+.entries .entry { display: grid; grid-template-columns: 1fr auto; gap: 4px 32px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid var(--line); }
 .entries .entry a { grid-row: span 2; text-decoration: none; }
 .entries .fname { display: block; color: var(--teal); font-size: 0.8125rem; }
 .entries .t { display: block; margin-top: 4px; font-size: clamp(1.4rem, 1rem + 1.8vw, 2.4rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; font-variation-settings: "wdth" 75; }
@@ -323,6 +323,36 @@ figcaption { margin-top: 10px; color: var(--dim); font: 400 0.75rem/1.6 var(--mo
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 ::view-transition-new(root) { animation: redraw 0.55s steps(16) both; }
 @keyframes redraw { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+/* the cursor bar on the repaint's leading edge, with the rows it just drew still glowing behind it.
+   It exists only during a transition, on page loads too, and keeps the same duration and steps as redraw. */
+.redraw-edge {
+  display: none; position: fixed; inset: 0; z-index: 300; pointer-events: none; view-transition-name: redraw-edge;
+  --glow: color-mix(in srgb, var(--plum) 16%, transparent);
+  background: linear-gradient(to top, var(--plum) 0 2px, var(--glow) 2px, transparent 44px);
+}
+:root:active-view-transition .redraw-edge { display: block; }
+::view-transition-group(redraw-edge) { animation: none; }
+::view-transition-old(redraw-edge) { animation: none; opacity: 0; }
+::view-transition-new(redraw-edge) { animation: sweep 0.55s steps(16) both; }
+@keyframes sweep { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+/* the theme switch scans instead: editor.js animates both pseudos band by band, each band printed
+   across, so here the bar becomes one band tall with its glow trailing behind the print head */
+:root:is([data-redraw="down"], [data-redraw="up"])::view-transition-new(root),
+:root:is([data-redraw="down"], [data-redraw="up"])::view-transition-new(redraw-edge) { animation: none; }
+:root:is([data-redraw="down"], [data-redraw="up"]) .redraw-edge {
+  bottom: auto; height: calc(100% / var(--bands));
+  background: linear-gradient(to left, var(--plum) 0 3px, var(--glow) 3px, transparent 72px);
+}
+:root[data-redraw="up"] .redraw-edge { background: linear-gradient(to right, var(--plum) 0 3px, var(--glow) 3px, transparent 72px); }
+/* the text repaints in plain ink and each highlight group's color arrives after, one group at a time */
+:root[data-syntax-off~="comment"] :is(#buf, header.top) { --dim: var(--ink); }
+:root[data-syntax-off~="string"] :is(#buf, header.top) { --ochre: var(--ink); }
+:root[data-syntax-off~="keyword"] :is(#buf, header.top) { --plum: var(--ink); }
+:root[data-syntax-off~="function"] :is(#buf, header.top) { --teal: var(--ink); }
+/* reduced motion: a short crossfade, no sweep and no bar */
+:root[data-redraw="fade"] .redraw-edge { display: none; }
+:root[data-redraw="fade"]::view-transition-new(root) { animation: fade-in 0.15s ease-out both; }
+@keyframes fade-in { from { opacity: 0; } }
 
 @media (max-width: 720px) {
   :root { --gutter: 28px; --pad: 16px; }

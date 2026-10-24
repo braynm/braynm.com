@@ -32,6 +32,7 @@ Every page has the same frame. Only the contents of `#buf` and the statusline te
   Google Fonts (Martian Mono, Literata), /css/style.css, og: meta
 <body data-page="home | list | post | page">
   canvas#bits             fixed, full screen, behind everything: the binary margins
+  div.redraw-edge         the cursor bar that rides view transitions; hidden otherwise
   header.top              ~/braynm.com  /post/<slug>.md      writing about github :set bg=…
   main#buf
     .buf                  the column; every .row inside is a line
@@ -72,10 +73,12 @@ The order matters. `preparePost()` runs before `createEditor()`, because it turn
 
 `editor.js` treats every `.row` inside `#buf` as a line, in document order, and `.row.nav` lines as places the cursor can be. On each cursor move it:
 
-1. sets `data-ln` on every line; CSS draws it in the gutter with `::before`, as the line number for the cursor line and the distance for the rest,
+1. sets `data-ln` on every line; CSS draws it in the gutter with `::before`, as the line number for the cursor line and the distance for the rest. Screen readers skip it (`content: attr(data-ln) / ""`),
 2. gives the cursor line the `cursor` class, and `tall` when it is over 110px high, so tall blocks highlight only the gutter, like Vim's `cursorlineopt=number`,
 3. writes the position to the statusline,
 4. sends the line's text to `bits.set()`: `data-text` if present, else its text content.
+
+Each number sits on the baseline of its line's first text, or of the heading when the line has one. When lines are collected, after fonts load and after a resize, `editor.js` measures that baseline with a zero-size inline-block and stores the offset in `--ln-top`. Lines that start with a photo or video keep the number at the top. Never set `--ln-top` in CSS.
 
 On the home page, on devices that can hover, the cursor follows the mouse. Everywhere else it follows scrolling: the cursor is the last line whose top is above 35% of the viewport. `j` and `k` scroll the new cursor line to that same 35% mark, so key moves and scroll-following agree. The attribute is `data-text`, never `data-src`: templating that treats `*src` as a URL percent-encodes it.
 
@@ -118,13 +121,17 @@ image ─► sample at 2× the character grid
 canvas: a 40% wash of each cell's color, then the character in that color, toned toward the ink color
 ```
 
-The drawing re-renders when the window resizes or the theme changes. Clicking toggles the `revealed` class, which swaps the drawing for the photo with the same repaint animation as the theme switch.
+The drawing re-renders when its width or the pixel density changes, and when the theme changes. Theme redraws are registered with `ed.onTheme(fn)`; the theme switch waits for them inside the view transition, so the repaint never captures a drawing in the old colors. Clicking toggles the `revealed` class, which swaps the drawing for the photo with the same repaint animation as the theme switch.
 
 ## Styling
 
 `css/style.css` defines the palette as tokens on `:root`, with a `[data-theme="dark"]` override. Each color has a syntax role: plum for keywords, ochre for strings, teal for functions, dim for comments. Light is sage `#DCE3D3`; dark is `#182017`. Martian Mono sets everything except post prose, which is Literata. Every `clamp()` keeps a `rem` term so text follows browser zoom. Code blocks scroll instead of wrapping.
 
-The theme switch and page-to-page navigation both use view transitions. `::view-transition-new(root)` reveals the new page top to bottom in steps, like a terminal redraw. Cross-document transitions are inside `prefers-reduced-motion: no-preference`; browsers without support load pages normally.
+The theme switch and page-to-page navigation both use view transitions. `::view-transition-new(root)` reveals the new page top to bottom in steps, like a terminal redraw. Every page has a static `div.redraw-edge`, the cursor bar on the repaint's leading edge. It is `display: none` except under `:root:active-view-transition`, so it shows on theme switches and page loads alike; it must be in the HTML because `main.js` runs too late for a page load's first frame. It has its own `view-transition-name`, and its `sweep` keyframes use the same duration and step count as `redraw`, so the bar stays on the clip edge. Change both together.
+
+The theme switch scans instead of wiping. It sets `data-redraw` to `down` (dark) or `up` (light), which turns off both CSS animations and makes the bar one band tall (`--bands`). Then, once the transition is ready, `editor.js` animates both pseudo-elements with the Web Animations API: 8 bands down the screen, each band printed left to right in 6 steps, 0.8s in all, with the bar's transform keyframes matching the clip-path keyframes. `up` runs the same scan from the bottom right. `BANDS`, `COLS` and `SCAN` in `editor.js` set the shape. It also sets `data-syntax-off="comment string keyword function"` inside the update callback; each name sets one token (`--dim`, `--ochre`, `--plum`, `--teal`) to `--ink` inside the header and `#buf`. Starting 180ms after the repaint ends, `editor.js` removes one name every 70ms, so the highlight groups get their colors back in order. Then the button's label changes by substitution, the way the home headline does. With reduced motion the switch is a 0.15s crossfade (`data-redraw="fade"`) with none of this.
+
+The browser bar color comes from the `theme-color` meta tags, which only know the system theme. The inline theme script sets both to a saved choice before first paint, and the theme switch sets them when the repaint reaches the top of the screen. Cross-document transitions are inside `prefers-reduced-motion: no-preference`; browsers without support load pages normally.
 
 ## Share cards
 
@@ -138,7 +145,7 @@ Copy `site/post/search-and-replace-in-vim/index.html` to `site/post/<slug>/index
 2. In `.post-head`, update the date, read time, word count, `<h1 class="title">`, the excerpt, and `data-text` (the title).
 3. Put the body in `#prose` as `p`, `ul`, `blockquote` and `h2`. Each heading needs an `id` and `<span class="hash" aria-hidden="true">## </span>`; the folds are built from the headings.
 4. Code blocks use the `.code` wrapper: a `.code-bar` with `[lang]` and the `yy` button, around `<div class="highlight"><pre class="chroma"><code>`. Syntax classes are Chroma's short names (`k`, `s`, `nf`, `c`); plain text works too.
-5. Videos use `figure.vid` with the file name as the caption. A photo goes at the start of `.eof` as `figure.row.nav.photo` with `width`, `height` and the file name as the caption. Never give it the class `hero`; `h1.hero` is the home headline.
+5. Videos use `figure.vid` with `preload="metadata"` and the file name as the caption. A `figure` never goes inside a `p`. A photo goes at the start of `.eof` as `figure.row.nav.photo` with `width`, `height`, `loading="lazy"` and the file name as the caption. Never give it the class `hero`; `h1.hero` is the home headline.
 6. Update the `:bprev` and `:bnext` links on this post and its neighbors.
 7. Add the post to the top of the writing list in `site/index.html`, and to `site/post/index.html` as an `li.entry` with `data-time` (Unix seconds), `data-name` and `data-size` (word count).
 8. Run `node tools/og.mjs`.

@@ -13,13 +13,19 @@ export async function startHero({ed, reduce}) {
     const to = SUBS[i + 1];
     const text = `:s/${from}/${to}/`;
     const b = document.createElement('b');
-    cmd.replaceChildren(b);
+    const caret = document.createElement('span');
+    caret.className = 'caret';
+    cmd.replaceChildren(b, caret);
+    // While a command is typed the cursor lives on the command line, and returns to the text on Enter.
+    row.classList.add('typing');
     for (let k = 1; k <= text.length; k++) {
       b.textContent = text.slice(0, k);
-      if (k === 3 + from.length) obj.classList.add('hl-search');
-      await wait(45);
+      // A typist's uneven rhythm, with a beat when incsearch finds the word.
+      if (k === 3 + from.length) { obj.classList.add('hl-search'); await wait(180); }
+      await wait(32 + Math.random() * 40);
     }
     await wait(350);
+    row.classList.remove('typing');
     obj.classList.remove('hl-search');
     obj.textContent = to;
     obj.classList.add('hl-new');

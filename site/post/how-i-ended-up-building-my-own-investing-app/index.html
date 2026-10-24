@@ -11,6 +11,7 @@
   var t = null;
   try { t = localStorage.getItem('bg'); } catch (e) {}
   document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (t) document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) { m.content = t === 'dark' ? '#182017' : '#DCE3D3'; });
 })();
 </script>
 <title>How I Ended Up Building My Own Investing App | Bryan Madrid</title>
@@ -36,6 +37,7 @@
 
 <body data-page="post">
 <canvas id="bits" aria-hidden="true"></canvas>
+<div class="redraw-edge" aria-hidden="true"></div>
 <a class="skip" href="#buf">Skip to content</a>
 <header class="top wrap">
   <a class="path" href="/">~/braynm.com</a><span class="crumb">/<a href="/post/">post</a>/how-i-ended-up-building-my-own-investing-app.md</span>

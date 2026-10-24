@@ -36,10 +36,49 @@ export function createEditor({bits, reduce, follow}) {
     if (mode === 'NORMAL') bits.set(srcOf(nav[cur]));
   };
 
+  // Each line number sits on the baseline of its line's first text, whatever size that text is.
+  // A zero-size inline-block's bottom edge is the baseline of the line it is on.
+  const probe = () => {
+    const p = document.createElement('span');
+    p.style.cssText = 'display:inline-block;width:0;height:0';
+    return p;
+  };
+  const firstText = r => {
+    const walk = document.createTreeWalker(r.querySelector('h1, h2, h3') || r, NodeFilter.SHOW_ALL);
+    for (let n; (n = walk.nextNode());) {
+      if (n.nodeType === 1 && n.matches('img, video, canvas')) return null;
+      if (n.nodeType === 3 && n.data.trim() && n.parentElement.getClientRects().length) return n;
+    }
+    return null;
+  };
+  const alignNumbers = () => {
+    if (!rows.length) return;
+    const g = getComputedStyle(rows[0], '::before');
+    const gutter = document.createElement('div');
+    gutter.style.cssText = `position:absolute;top:0;visibility:hidden;font:${g.fontWeight} ${g.fontSize}/${g.lineHeight} ${g.fontFamily}`;
+    gutter.append(probe(), '0');
+    document.body.append(gutter);
+    const placed = rows.map(r => {
+      const t = firstText(r);
+      if (!t) return [r, null];
+      const p = probe();
+      t.before(p);
+      return [r, p];
+    });
+    const lead = gutter.firstChild.getBoundingClientRect().bottom - gutter.getBoundingClientRect().top;
+    for (const [r, p] of placed) {
+      if (!p) { r.style.removeProperty('--ln-top'); continue; }
+      r.style.setProperty('--ln-top', `${(p.getBoundingClientRect().bottom - r.getBoundingClientRect().top - lead).toFixed(1)}px`);
+    }
+    placed.forEach(([, p]) => p?.remove());
+    gutter.remove();
+  };
+
   const refresh = () => {
     rows = [...document.querySelectorAll('#buf .row')];
     nav = rows.filter(r => r.classList.contains('nav'));
     cur = Math.max(0, Math.min(cur, nav.length - 1));
+    alignNumbers();
     render();
   };
 
@@ -79,6 +118,9 @@ export function createEditor({bits, reduce, follow}) {
   }, {passive: true});
 
   refresh();
+  document.fonts.ready.then(alignNumbers);
+  let alignTimer;
+  addEventListener('resize', () => { clearTimeout(alignTimer); alignTimer = setTimeout(alignNumbers, 150); });
   if (follow === 'hover') {
     nav.forEach(r => r.addEventListener('mouseenter', () => { if (mode === 'NORMAL') place(nav.indexOf(r), false); }));
   }
@@ -135,26 +177,127 @@ export function createEditor({bits, reduce, follow}) {
   try { chosen = localStorage.getItem('bg'); } catch {}
   let bg = document.documentElement.dataset.theme;
   const label = () => { toggle.textContent = `:set bg=${bg === 'dark' ? 'light' : 'dark'}`; };
+  // Anything painted from the theme's colors redraws here, so the view transition waits for it
+  // instead of capturing the old colors and popping to the new ones halfway through the repaint.
+  const themed = [bits.recolor];
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const root = document.documentElement;
+  // The phone's browser bar takes the page color; the <meta> tags alone only follow the system theme.
+  const metas = document.querySelectorAll('meta[name="theme-color"]');
+  const paintBar = () => {
+    const c = getComputedStyle(root).getPropertyValue('--bg').trim();
+    metas.forEach(m => { m.content = c; });
+  };
+  // The theme repaint scans like a raster: band by band down the screen, each band printed left to right
+  // in steps, with the cursor bar riding the leading edge. Light runs the scan backwards, from the bottom right.
+  const BANDS = 8;
+  const COLS = 6;
+  const SCAN = 800;
+  root.style.setProperty('--bands', BANDS);
+  const scan = up => {
+    const clip = [];
+    const edge = [];
+    const pt = ([x, y]) => up ? `${100 - x}% ${100 - y}%` : `${x}% ${y}%`;
+    for (let k = 0; k < BANDS; k++) {
+      const y1 = k * 100 / BANDS;
+      const y2 = (k + 1) * 100 / BANDS;
+      const end = k + 1 < BANDS ? (k + 1) / BANDS - 1e-3 : 1;
+      for (const [offset, x, easing] of [[k / BANDS, 0, `steps(${COLS}, start)`], [end, 100, 'linear']]) {
+        clip.push({offset, easing, clipPath: `polygon(${[[0, 0], [100, 0], [100, y1], [x, y1], [x, y2], [0, y2]].map(pt).join(', ')})`});
+        edge.push({offset, easing, transform: up ? `translate(${100 - x}%, ${(BANDS - 1 - k) * 100}%)` : `translate(${x - 100}%, ${k * 100}%)`});
+      }
+    }
+    return {clip, edge};
+  };
+  // After the repaint, highlight groups come back one at a time, in the order a colorscheme sets them.
+  const GROUPS = ['comment', 'string', 'keyword', 'function'];
+  let repaint = null;
+  // The button's label changes by substitution, the way the home headline does.
+  const relabel = async t => {
+    const from = toggle.textContent.replace(':set bg=', '');
+    const to = bg === 'dark' ? 'light' : 'dark';
+    const word = (cls, text) => Object.assign(document.createElement('span'), {className: cls, textContent: text});
+    if (from === to) return label();
+    toggle.replaceChildren(':set bg=', word('hl-search', from));
+    await wait(260);
+    if (repaint !== t) return label();
+    toggle.replaceChildren(':set bg=', word('hl-new', to));
+    await wait(700);
+    if (repaint === t) label();
+  };
+  // Dark rolls down from the top and light rises from the bottom, painted in plain ink with the colors
+  // arriving after. Reduced motion gets a short crossfade instead.
   const applyBg = (next, animate) => {
     bg = next;
     const go = () => {
-      document.documentElement.dataset.theme = next;
-      label();
-      bits.recolor();
+      root.dataset.theme = next;
+      return Promise.all(themed.map(fn => fn()));
     };
-    if (animate && !reduce && document.startViewTransition) document.startViewTransition(go);
-    else go();
+    if (!animate || !document.startViewTransition) { go(); label(); paintBar(); return; }
+    const motion = reduce ? 'fade' : next === 'light' ? 'up' : 'down';
+    root.dataset.redraw = motion;
+    const t = repaint = document.startViewTransition(() => {
+      if (motion !== 'fade') root.dataset.syntaxOff = GROUPS.join(' ');
+      const drawn = go();
+      if (motion === 'fade') label();
+      // The browser bar changes when the repaint reaches the top of the screen.
+      if (motion !== 'up') paintBar();
+      return drawn;
+    });
+    if (motion !== 'fade') t.ready.then(() => {
+      const {clip, edge} = scan(motion === 'up');
+      root.animate(clip, {duration: SCAN, fill: 'both', pseudoElement: '::view-transition-new(root)'});
+      root.animate(edge, {duration: SCAN, fill: 'both', pseudoElement: '::view-transition-new(redraw-edge)'});
+    }, () => {});
+    t.finished.finally(async () => {
+      if (repaint !== t) return;
+      delete root.dataset.redraw;
+      if (motion === 'fade') return;
+      if (motion === 'up') paintBar();
+      await wait(180);
+      for (let i = 1; i <= GROUPS.length; i++) {
+        if (repaint !== t) return;
+        root.dataset.syntaxOff = GROUPS.slice(i).join(' ');
+        await wait(70);
+      }
+      delete root.dataset.syntaxOff;
+      await relabel(t);
+    });
+    return t.finished;
   };
   const setBg = next => {
     chosen = next;
     try { localStorage.setItem('bg', next); } catch {}
-    applyBg(next, true);
     say(`:set background=${next}`);
+    return applyBg(next, true);
   };
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
     if (!chosen) applyBg(e.matches ? 'dark' : 'light', true);
   });
-  toggle.addEventListener('click', () => setBg(bg === 'dark' ? 'light' : 'dark'));
+  // The button types its own label into the command line, the way you would, then presses Enter.
+  // Its bytes flip through the margins as they are typed, like a search query does.
+  let busy = false;
+  toggle.addEventListener('click', async () => {
+    if (busy) return;
+    busy = true;
+    const next = bg === 'dark' ? 'light' : 'dark';
+    if (!reduce) {
+      setMode('COMMAND');
+      const typed = document.createElement('span');
+      const caret = document.createElement('span');
+      caret.className = 'caret';
+      cmdline.replaceChildren(typed, caret);
+      for (const ch of `:set bg=${next}`) {
+        typed.textContent += ch;
+        bits.set(typed.textContent);
+        await wait(18 + Math.random() * 24);
+      }
+      await wait(140);
+      setMode('NORMAL');
+    }
+    await setBg(next)?.catch(() => {});
+    busy = false;
+  });
   label();
 
   // ---- : commands ----
@@ -310,6 +453,7 @@ export function createEditor({bits, reduce, follow}) {
   return {
     key,
     cmd: (name, fn) => commands.set(name, fn),
+    onTheme: fn => themed.push(fn),
     setMode,
     say,
     refresh,

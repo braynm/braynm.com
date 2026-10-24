@@ -13,7 +13,9 @@ export function createBits({canvas, strip, column, reduce}) {
   let my = -1e4;
   let sidesOn = null;
 
-  addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  // A tap is not a hover: only a mouse lights bits, and leaving the window puts them out.
+  addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { mx = e.clientX; my = e.clientY; } });
+  document.addEventListener('mouseout', e => { if (!e.relatedTarget) { mx = -1e4; my = -1e4; } });
 
   const recolor = () => {
     const cs = getComputedStyle(document.documentElement);

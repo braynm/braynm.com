@@ -166,13 +166,17 @@ export function initAscii(ed, opts = {edges: true, color: 'true', wash: 0.4}, fi
     const still = 'mask' in fig.dataset;
     const cv = document.createElement('canvas');
     cv.className = 'ascii';
+    // Until the lazy photo loads, an undrawn canvas would sit at its default 300px, wider than a phone's column.
+    cv.width = cv.height = 0;
     cv.setAttribute('aria-hidden', 'true');
     const flip = document.createElement(still ? 'span' : 'button');
     flip.className = 'flip';
     img.replaceWith(flip);
     flip.append(cv, img);
 
-    const render = () => draw(fig, img, cv, opts);
+    let drawnAt = '';
+    const at = () => `${fig.clientWidth}@${devicePixelRatio}`;
+    const render = () => { drawnAt = at(); return draw(fig, img, cv, opts); };
     const ready = img.complete ? Promise.resolve() : new Promise(r => img.addEventListener('load', r, {once: true}));
     ready.then(render).then(() => {
       fig.classList.add('drawn');
@@ -200,8 +204,9 @@ export function initAscii(ed, opts = {edges: true, color: 'true', wash: 0.4}, fi
       });
     }
 
+    // Phones fire resize when the address bar slides; only a new width or pixel density changes the drawing.
     let t;
-    addEventListener('resize', () => { clearTimeout(t); t = setTimeout(render, 150); });
-    new MutationObserver(render).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+    addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { if (at() !== drawnAt) render(); }, 150); });
+    ed.onTheme(render);
   });
 }

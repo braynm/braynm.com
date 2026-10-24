@@ -49,7 +49,7 @@ Selecting text with the mouse switches the statusline to `VISUAL`, shows the cha
 | `:noh` | Clear search highlighting |
 | `:help` | List the commands |
 
-The `:set bg=...` button in the header does the same as the command. Without a saved choice the site follows the system's light or dark setting. Switching repaints the page from top to bottom, like a terminal redraw. Moving between pages uses the same repaint in browsers that support cross-document view transitions.
+The `:set bg=...` button in the header does the same as the command. Without a saved choice the site follows the system's light or dark setting. Clicking the button first types its command into the command line, with the mode showing `COMMAND` and the command's bits flipping through the margins. Then the page repaints like a raster scan, band by band, each band printed across in steps, with a plum cursor bar as the print head: dark scans down from the top left, light scans up from the bottom right. The text repaints in plain ink, then the colors come back one highlight group at a time (comments, strings, keywords, functions), like a colorscheme loading, and the button's label changes with a substitution like the home headline's. On phones the browser bar changes color with the page. With reduced motion, the switch is a short crossfade. Moving between pages uses the same top-to-bottom repaint, cursor bar included, in browsers that support cross-document view transitions.
 
 ## Photos
 
