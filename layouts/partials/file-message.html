@@ -1,0 +1,3 @@
+{{- /* What Vim prints on opening the file: its real line and byte counts, front matter included. */ -}}
+{{- $raw := readFile (printf "content/%s" .File.Path) -}}
+"{{ .File.Path }}" {{ strings.Count "\n" $raw }}L, {{ len $raw }}B

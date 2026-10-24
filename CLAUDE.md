@@ -1,6 +1,6 @@
 # braynm.com
 
-Static HTML, CSS and ES modules. Everything Cloudflare serves is in `site/`; nothing else in this repository is published. There is no build step. Claude edits the HTML directly.
+Hugo builds the site from `content/` (Markdown), `layouts/` (templates) and `static/` (CSS, ES modules, images, videos) into `site/`, which is committed. Cloudflare serves `site/` as it is and never runs Hugo; nothing else in this repository is published. Never edit `site/` by hand: change the sources, run `hugo`, and commit the sources and `site/` together. Run `tools/publish.sh` instead when a title or excerpt changes, so the share cards are redrawn.
 
 - What visitors see: `docs/HOW-IT-WORKS.md`
 - How it is built, and the steps to add a post: `docs/ARCHITECTURE.md`
@@ -10,7 +10,7 @@ Static HTML, CSS and ES modules. Everything Cloudflare serves is in `site/`; not
 
 - Code never wraps. `pre` scrolls; a broken `:%s/\v\a+/\u&/g` is a wrong command.
 - Every `clamp()` keeps a `rem` term, or text ignores browser zoom.
-- The theme script stays inline and un-deferred in `<head>`, or the page flashes.
+- The theme script stays inline and un-deferred in `<head>` (`layouts/_default/baseof.html`), or the page flashes.
 - Fonts must cover latin-ext: the Vim post contains `Jászfelsőszentgyörgy`.
 - Line text for the margins lives in `data-text`, never `data-src`.
 - Bits that flash in the margins respect the vertical fade, or stray bits light up in the corners.
@@ -25,6 +25,6 @@ Static HTML, CSS and ES modules. Everything Cloudflare serves is in `site/`; not
 
 Known issues in Bryan's own words. Do not edit them without asking:
 
-- `substite` for `substitute`, twice in the Vim post.
+- `substite` for `substitute`, twice in the Vim post (`content/post/search-and-replace-in-vim.md`).
 - The Registers section says replace *Yamagawaokachiyogamizu*, but the resulting command shows *Eexterveenschekanaal*.
-- The About page opens with ` am Bryan!` (missing "I"), says 9 years of experience (written in 2023), and its Personal Project section still describes GroceryBudget as active and links to the dead site.
+- The About page (`content/about.md`) opens with ` am Bryan!` (missing "I"), says 9 years of experience (written in 2023), and its Personal Project section still describes GroceryBudget as active and links to the dead site.

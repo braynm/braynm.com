@@ -1,0 +1,36 @@
+{{ define "page" }}list{{ end }}
+{{ define "crumb" }}<span class="crumb">/post/</span>{{ end }}
+{{ define "file" }}post/{{ end }}
+{{ define "filetype" }}netrw{{ end }}
+{{ define "message" }}"post/" {{ len .RegularPages }} files{{ end }}
+
+{{ define "main" }}
+<div class="buf netrw">
+  <h1 class="sr-only">Writing</h1>
+  <div class="head" aria-hidden="true">
+    <div class="rule">" ========================================================================================================================================================================================================</div>
+    <div>" Netrw Directory Listing</div>
+    <div>"   ~/braynm.com/post</div>
+    <div>"   Sorted by&ensp;&ensp;<span class="sorted" id="sorted">time</span></div>
+    <div>"   Quick Help: <span class="keys">j/k move &ensp;&lt;CR&gt; open &ensp;s sort &ensp;- go up &ensp;/ search</span><span class="taps">tap a file to open it</span></div>
+    <div class="rule">" ========================================================================================================================================================================================================</div>
+  </div>
+
+  <ol class="entries" id="entries">
+    <li class="row nav up" data-text="../"><a href="/">../</a></li>
+    {{- range .RegularPages }}
+    <li class="row nav entry" data-text="{{ .Title }}" data-time="{{ .Date.Unix }}" data-name="{{ .File.ContentBaseName }}" data-size="{{ .WordCount }}">
+      <a href="{{ .RelPermalink }}">
+        <span class="fname">{{ .File.LogicalName }}</span>
+        <span class="t">{{ .Title }}</span>
+        <span class="x">{{ .Params.excerpt }}</span>
+      </a>
+      <time class="d" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+      <span class="sz">{{ .ReadingTime }} min</span>
+    </li>
+    {{- end }}
+  </ol>
+  <div class="row tilde" aria-hidden="true">~</div>
+  <div class="row tilde" aria-hidden="true">~</div>
+</div>
+{{ end }}

@@ -1,0 +1,54 @@
+{{ define "page" }}{{ if eq .Section "post" }}post{{ else }}page{{ end }}{{ end }}
+
+{{ define "crumb" }}<span class="crumb">/{{ if eq .Section "post" }}<a href="/post/">post</a>/{{ .File.LogicalName }}{{ else }}{{ .File.Path }}{{ end }}</span>{{ end }}
+
+{{ define "main" }}
+{{- $post := eq .Section "post" }}
+<article class="buf post">
+  {{- with .Params.map }}
+  <figure class="photo map" data-text="{{ . }}" data-mask>
+    {{- $img := imageConfig (printf "static/images/%s" .) }}
+    <img src="/images/{{ . }}" width="{{ $img.Width }}" height="{{ $img.Height }}" alt="{{ $.Params.mapAlt }}" decoding="async">
+    <figcaption>{{ . }}</figcaption>
+  </figure>
+  {{- end }}
+  <header class="row nav post-head" data-text="{{ .Title }}">
+    {{- if $post }}
+    <p class="info"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>&ensp; {{ .ReadingTime }} min read &ensp; {{ .WordCount }} words</p>
+    {{- end }}
+    <h1 class="title">{{ .Title }}</h1>
+    {{- with .Params.excerpt }}
+    <p class="excerpt"><span aria-hidden="true"># </span>{{ . }}</p>
+    {{- end }}
+  </header>
+  <div class="dump" aria-hidden="true"><canvas></canvas></div>
+  <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
+
+  <div class="prose" id="prose">
+{{ .Content }}
+  </div>
+
+  <footer class="eof">
+    {{- with .Params.photo }}
+    {{- $img := imageConfig (printf "static/images/%s" .) }}
+    <figure class="row nav photo" data-text="{{ . }}">
+      <img src="/images/{{ . }}" width="{{ $img.Width }}" height="{{ $img.Height }}" alt="" loading="lazy" decoding="async">
+      <figcaption>{{ . }}&ensp;{{ $img.Width }}&times;{{ $img.Height }}</figcaption>
+    </figure>
+    {{- end }}
+    <div class="row tilde" aria-hidden="true">~</div>
+    <div class="row tilde" aria-hidden="true">~</div>
+    {{- if and $post (or .PrevInSection .NextInSection) }}
+    <nav class="buffers" aria-label="More posts">
+      {{- with .PrevInSection }}
+      <a class="row nav buffer" href="{{ .RelPermalink }}" data-text="{{ .Title }}"><span class="cmd">:bprev</span> <span class="t">{{ .Title }}</span></a>
+      {{- end }}
+      {{- with .NextInSection }}
+      <a class="row nav buffer" href="{{ .RelPermalink }}" data-text="{{ .Title }}"><span class="cmd">:bnext</span> <span class="t">{{ .Title }}</span></a>
+      {{- end }}
+    </nav>
+    {{- end }}
+    <p class="row nav sign" data-text="{{ site.Params.email }}">Written by Bryan Madrid, in Vim. Reply to <a href="mailto:{{ site.Params.email }}">{{ site.Params.email }}</a>.</p>
+  </footer>
+</article>
+{{ end }}

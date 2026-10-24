@@ -1,30 +1,45 @@
 # braynm.com architecture
 
-The site is static. Cloudflare Pages serves `site/` as it is, with no build step. Each page is a hand-maintained HTML file that loads one stylesheet and one JavaScript module. The JavaScript adds the Vim behavior on top of HTML that already reads correctly without it. For what visitors see, see `HOW-IT-WORKS.md`.
+The site is static. Hugo builds it from Markdown and templates into `site/`, which is committed, and Cloudflare Pages serves `site/` as it is. Each page loads one stylesheet and one JavaScript module. The JavaScript adds the Vim behavior on top of HTML that already reads correctly without it. For what visitors see, see `HOW-IT-WORKS.md`.
 
 ## Repository
 
 ```text
 README.md, CLAUDE.md, docs/      in git, never served
-tools/og.mjs, tools/og.html      renders the share cards into site/images/og/
-site/                            everything Cloudflare publishes
+hugo.toml                        site settings; Hugo builds into site/
+content/                         the words, in Markdown
+  _index.md                      home page settings
+  about.md
+  post/_index.md                 Writing page settings
+  post/<slug>.md                 one file per post
+layouts/                         templates that turn content into pages
+  _default/baseof.html           the frame every page shares
+  _default/single.html           a post, or the About page
   index.html                     home
-  post/index.html                Writing page (netrw)
-  post/<slug>/index.html         one folder per post
-  about/index.html
-  404.html                       served by Cloudflare for missing paths
-  _redirects                     301s for posts that changed address
+  post/list.html                 Writing page (netrw)
+  404.html
+  _default/_markup/              how Markdown headings and code blocks render
+  shortcodes/video.html          {{< video "file.mp4" >}}
+  index.rss.xml                  the feed at /index.xml
+archetypes/post.md               what hugo new post/<slug>.md starts from
+static/                          copied into site/ as is
   css/style.css                  the whole stylesheet
   js/*.js                        ES modules, loaded from js/main.js
   images/, images/og/, videos/
+  _redirects                     301s for posts that changed address
   favicon.svg, favicon.ico, apple-touch-icon.png
+site/                            Hugo's output, committed; everything Cloudflare publishes. Never edit it.
+tools/publish.sh                 builds site/, renders the share cards, builds again
+tools/og.mjs, tools/og.html      renders the share cards into static/images/og/
 ```
+
+Cloudflare serves the committed `site/` and never runs Hugo. Hugo also writes `site/index.xml` (the feed) and `site/sitemap.xml`.
 
 Post addresses match the old Hugo site (`/post/search-and-replace-in-vim/`, `/post/my-first-post/`), so existing links keep working.
 
 ## A page
 
-Every page has the same frame. Only the contents of `#buf` and the statusline text differ.
+Every page has the same frame, from `layouts/_default/baseof.html`. Only the contents of `#buf` and the statusline text differ; each layout fills them through Hugo blocks (`page`, `crumb`, `main`, `file`, `filetype`, `message`).
 
 ```text
 <head>
@@ -135,25 +150,22 @@ The browser bar color comes from the `theme-color` meta tags, which only know th
 
 ## Share cards
 
-`tools/og.mjs` walks `site/` for `index.html` files, reads each page's `og:image` name, title, excerpt, statusline path and date, and renders `tools/og.html` with that data in headless Chrome through the DevTools protocol. Each screenshot is saved as `site/images/og/<name>.png`. Pages that share a card name share the image.
+`tools/og.mjs` walks the built `site/` for `index.html` files, reads each page's `og:image` name, title, excerpt, statusline path and date, and renders `tools/og.html` with that data in headless Chrome through the DevTools protocol. Each screenshot is saved as `static/images/og/<name>.png`. Pages that share a card name share the image. `tools/publish.sh` runs it between two Hugo builds, so the cards come from the current pages and end up in `site/`.
 
 ## Adding a post
 
-Copy `site/post/search-and-replace-in-vim/index.html` to `site/post/<slug>/index.html`, then:
+1. `hugo new post/<slug>.md`. The slug is the address: `/post/<slug>/`.
+2. Fill in the front matter: `title`, `excerpt` (the line under the title), and optionally `description` (search and share text, if different) and `photo` (a file in `static/images/`, drawn at the end of the post). Delete `draft: true` when it is ready; drafts are never built.
+3. Write the post in Markdown. `##` headings become the folds. Fenced code blocks get the `[lang]` bar, the `yy` button and highlighting. A video is `{{< video "file.mp4" >}}` on a line of its own, with the file in `static/videos/`.
+4. Preview with `hugo server` at http://localhost:1313.
+5. Run `tools/publish.sh`, then commit `content/`, `static/` and `site/` together.
 
-1. Update `<title>`, `<meta name="description">`, the `og:` and canonical tags, the header crumb (`/post/<slug>.md`), the statusline file name and the command-line message (`"post/<slug>.md" NL, NB`).
-2. In `.post-head`, update the date, read time, word count, `<h1 class="title">`, the excerpt, and `data-text` (the title).
-3. Put the body in `#prose` as `p`, `ul`, `blockquote` and `h2`. Each heading needs an `id` and `<span class="hash" aria-hidden="true">## </span>`; the folds are built from the headings.
-4. Code blocks use the `.code` wrapper: a `.code-bar` with `[lang]` and the `yy` button, around `<div class="highlight"><pre class="chroma"><code>`. Syntax classes are Chroma's short names (`k`, `s`, `nf`, `c`); plain text works too.
-5. Videos use `figure.vid` with `preload="metadata"` and the file name as the caption. A `figure` never goes inside a `p`. A photo goes at the start of `.eof` as `figure.row.nav.photo` with `width`, `height`, `loading="lazy"` and the file name as the caption. Never give it the class `hero`; `h1.hero` is the home headline.
-6. Update the `:bprev` and `:bnext` links on this post and its neighbors.
-7. Add the post to the top of the writing list in `site/index.html`, and to `site/post/index.html` as an `li.entry` with `data-time` (Unix seconds), `data-name` and `data-size` (word count).
-8. Run `node tools/og.mjs`.
+Hugo works out everything that used to be typed by hand: the date, read time and word count, the statusline message with the file's real line and byte counts, the photo's size, the home and Writing lists, the `:bprev` and `:bnext` links, the feed and the sitemap.
 
-If a post moves to a new address, add a line to `site/_redirects`.
+If a post moves to a new address, add a line to `static/_redirects`.
 
 ## Checking a change
 
-- Serve `site/` locally and load every page with the browser console open.
+- Build with `hugo`, serve `site/` locally, and load every page with the browser console open.
 - At phone widths, compare `document.documentElement.scrollWidth` with `clientWidth` at 320, 360, 390 and 430 pixels using device emulation. A headless screenshot narrower than Chrome's minimum window width crops the right edge and looks like overflow when there is none.
 - After changing shared CSS, check every page, not only the one you changed. A class name reused across pages once squeezed the home headline.

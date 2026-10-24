@@ -1,0 +1,35 @@
+{{ define "page" }}home{{ end }}
+{{ define "file" }}index.md{{ end }}
+{{ define "message" }}Press j or k to move, / to search, : for commands.{{ end }}
+
+{{ define "main" }}
+<div class="buf home">
+  <div class="row nav hero-row" data-text="Bryan Madrid writes Elixir">
+    <h1 class="hero" aria-label="Bryan Madrid writes Elixir"><span class="sub">Bryan Madrid</span><span class="sub">writes <span id="hero-obj">Elixir</span><span class="blk" aria-hidden="true"></span></span></h1>
+  </div>
+  <p class="hero-cmd" aria-hidden="true" id="hero-cmd">&nbsp;</p>
+  <div class="dump" aria-hidden="true"><canvas></canvas></div>
+  <p class="row lede"><span class="comment"># </span>Software engineer from the <span class="str">Philippines</span>, working remotely for a startup. I write functional code in <span class="fn">Elixir</span> and <span class="fn">TypeScript</span>, across <span class="fn">Phoenix</span>, <span class="fn">React</span>, <span class="fn">Node.js</span> and <span class="fn">PostgreSQL</span>, build with <span class="fn">AI</span>, edit everything in <span class="kw">Vim</span>, and write here so I remember what I learned.</p>
+
+  <h2 class="helphead" id="writing"><span>WRITING</span><span class="tag">*braynm-writing*</span></h2>
+  {{- $posts := where site.RegularPages "Section" "post" }}
+  {{- range first 3 $posts }}
+  <div class="row nav"><a class="entry" href="{{ .RelPermalink }}"><time class="d" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time><span class="t">{{ .Title }}<span class="x">{{ .Params.excerpt }}</span></span><span class="go" aria-hidden="true">&lt;CR&gt; open</span></a></div>
+  {{- end }}
+  <div class="row nav"><a class="explore" href="/post/">:Explore post/ <span class="comment">&ensp;{{ len $posts }} files</span></a></div>
+
+  <h2 class="helphead" id="about"><span>ABOUT</span><span class="tag">*braynm-about*</span></h2>
+  <div class="row twocol">
+    <div><p>I'm Bryan. Elixir is my favorite language, TypeScript is my other one, and both get written in a functional style. Lately I build with AI too. Vim is my editor, and remote work lets me code from anywhere in the islands.</p></div>
+    <div><p class="comment"># off the clock</p><p>Anime, movies, a lot of TV, and the NBA. Always the NBA.</p><p>Lately, I've been into stocks, and it turned into <a href="/post/how-i-ended-up-building-my-own-investing-app/">building my own investing app</a>.</p></div>
+  </div>
+
+  <h2 class="helphead"><span>PROJECTS</span><span class="tag">*braynm-projects*</span></h2>
+  <div class="row nav" data-text="IBKR Screener [RO]"><a class="proj" href="/post/how-i-ended-up-building-my-own-investing-app/"><span class="t">IBKR Screener <span class="ro" title="Read-only: private, built for my own use">[RO]</span></span><span class="x">My own investing workspace on top of Interactive Brokers, with filings, fundamentals, charts, and order routing in one place. Private, built for my use only. Read how it started.</span></a></div>
+  <div class="row nav" data-text="GroceryBudget [abandoned]"><div class="proj gone"><span class="t">GroceryBudget <span class="ro" title="Abandoned: no longer maintained">[abandoned]</span></span><span class="x">Tracked grocery spending, set limits, and showed where the money went before you reached the checkout. No longer maintained, and the site is offline.</span></div></div>
+
+  <h2 class="helphead"><span>CONTACT</span><span class="tag">*braynm-contact*</span></h2>
+  <div class="row nav"><a class="contact" href="mailto:{{ site.Params.email }}">{{ site.Params.email }}</a></div>
+  <div class="row tilde" aria-hidden="true">~</div>
+</div>
+{{ end }}

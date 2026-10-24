@@ -1,0 +1,25 @@
+baseURL = 'https://braynm.com/'
+languageCode = 'en'
+title = 'Bryan Madrid'
+# Cloudflare serves site/ as committed; it never runs Hugo.
+publishDir = 'site'
+disableKinds = ['taxonomy', 'term']
+disableHugoGeneratorInject = true
+
+[params]
+description = 'Bryan Madrid writes Elixir and TypeScript, builds with AI, and keeps notes here so he remembers what he learned.'
+email = 'hi@braynm.com'
+github = 'https://github.com/braynm'
+
+# One feed, /index.xml, with every post.
+[outputs]
+home = ['HTML', 'RSS']
+section = ['HTML']
+page = ['HTML']
+
+[markup.goldmark.renderer]
+unsafe = true
+
+[markup.highlight]
+noClasses = false
+guessSyntax = false

@@ -17,6 +17,7 @@ The side margins on wide screens show the current line as raw bits, the way Vim 
 | A post | `/post/<slug>/` | The post as a buffer. Section headings appear at the top as Vim folds (`+-- 12 lines: Capitalizing Words`). |
 | About | `/about/` | Bryan's About page. |
 | Missing page | anything else | `E484: Can't open file`. |
+| Feed | `/index.xml` | Every post, for feed readers. |
 
 Opening a post shows Vim's real file message in the command line, for example `"post/search-and-replace-in-vim.md" 130L, 4334B`.
 
