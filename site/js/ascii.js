@@ -162,24 +162,15 @@ async function draw(fig, img, cv, opts) {
 export function initAscii(ed, opts = {edges: true, color: 'true', wash: 0.4}, figs = document.querySelectorAll('figure.photo')) {
   figs.forEach(fig => {
     const img = fig.querySelector('img');
-    const kind = 'mask' in fig.dataset ? 'map' : 'photo';
+    // The About map stays a drawing: no button, no hint, nothing to flip to.
+    const still = 'mask' in fig.dataset;
     const cv = document.createElement('canvas');
     cv.className = 'ascii';
     cv.setAttribute('aria-hidden', 'true');
-    const flip = document.createElement('button');
-    flip.type = 'button';
+    const flip = document.createElement(still ? 'span' : 'button');
     flip.className = 'flip';
-    flip.setAttribute('aria-label', `Show the ${kind}`);
-    flip.setAttribute('aria-pressed', 'false');
     img.replaceWith(flip);
     flip.append(cv, img);
-    // The map sits beside the About title, where a hint would crowd it.
-    const hint = kind === 'photo' ? document.createElement('span') : null;
-    if (hint) {
-      hint.className = 'hint';
-      hint.textContent = `Click the drawing to see the ${kind}`;
-      fig.querySelector('figcaption')?.append(hint);
-    }
 
     const render = () => draw(fig, img, cv, opts);
     const ready = img.complete ? Promise.resolve() : new Promise(r => img.addEventListener('load', r, {once: true}));
@@ -192,13 +183,22 @@ export function initAscii(ed, opts = {edges: true, color: 'true', wash: 0.4}, fi
       }, {threshold: 0.25}).observe(fig);
     });
 
-    flip.addEventListener('click', () => {
-      const on = fig.classList.toggle('revealed');
-      flip.setAttribute('aria-pressed', String(on));
-      flip.setAttribute('aria-label', on ? 'Show the drawing' : `Show the ${kind}`);
-      if (hint) hint.textContent = on ? `Click the ${kind} to go back to the drawing` : `Click the drawing to see the ${kind}`;
-      ed.say(on ? `:r ${fig.dataset.text}` : `"${fig.dataset.text}" drawn in Vim commands`);
-    });
+    if (!still) {
+      flip.type = 'button';
+      flip.setAttribute('aria-label', 'Show the photo');
+      flip.setAttribute('aria-pressed', 'false');
+      const hint = document.createElement('span');
+      hint.className = 'hint';
+      hint.textContent = 'Click the drawing to see the photo';
+      fig.querySelector('figcaption')?.append(hint);
+      flip.addEventListener('click', () => {
+        const on = fig.classList.toggle('revealed');
+        flip.setAttribute('aria-pressed', String(on));
+        flip.setAttribute('aria-label', on ? 'Show the drawing' : 'Show the photo');
+        hint.textContent = on ? 'Click the photo to go back to the drawing' : 'Click the drawing to see the photo';
+        ed.say(on ? `:r ${fig.dataset.text}` : `"${fig.dataset.text}" drawn in Vim commands`);
+      });
+    }
 
     let t;
     addEventListener('resize', () => { clearTimeout(t); t = setTimeout(render, 150); });

@@ -213,7 +213,7 @@ figure { margin: 0; }
 .post:has(> .map) .row { display: flow-root; }
 .post:has(> .map) :is(.dump, .folds) { overflow: hidden; }
 /* Manila, placed where the PNG's dot is; the drawing's own plum is too muddy to find */
-.map .flip { position: relative; }
+.map .flip { position: relative; cursor: default; }
 .map .flip::after {
   content: "*"; position: absolute; left: 41.8%; top: 39.5%; translate: -50% -42%;
   color: var(--plum); font: 800 1.25rem/1 var(--mono);
