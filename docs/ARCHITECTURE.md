@@ -1,6 +1,6 @@
 # braynm.com architecture
 
-The site is static. Hugo builds it from Markdown and templates into `site/`, which is committed, and Cloudflare Pages serves `site/` as it is. Each page loads one stylesheet and one JavaScript module. The JavaScript adds the Vim behavior on top of HTML that already reads correctly without it. For what visitors see, see `HOW-IT-WORKS.md`.
+The site is static. Hugo builds it from Markdown and templates into `site/`, which is committed, and Cloudflare Pages serves `site/` as it is. Each page loads one stylesheet and one JavaScript bundle, both fingerprinted by Hugo. The JavaScript adds the Vim behavior on top of HTML that already reads correctly without it. For what visitors see, see `HOW-IT-WORKS.md`.
 
 ## Repository
 
@@ -14,19 +14,24 @@ content/                         the words, in Markdown
   post/<slug>.md                 one file per post
 layouts/                         templates that turn content into pages
   _default/baseof.html           the frame every page shares
-  _default/single.html           a post, or the About page
+  _default/single.html           a post, or the About page; renders the folds
   index.html                     home
   post/list.html                 Writing page (netrw)
   404.html
   _default/_markup/              how Markdown headings and code blocks render
+  partials/lines.html            inlines assets/js/lines.js after the prose
   shortcodes/video.html          {{< video "file.mp4" >}}
   index.rss.xml                  the feed at /index.xml
 archetypes/post.md               what hugo new post/<slug>.md starts from
+assets/                          processed by Hugo
+  css/style.css                  the whole stylesheet, served as css/style.<hash>.css
+  js/*.js                        ES modules, bundled from js/main.js into js/main.<hash>.js
+  js/lines.js                    a plain script, inlined after the prose
 static/                          copied into site/ as is
-  css/style.css                  the whole stylesheet
-  js/*.js                        ES modules, loaded from js/main.js
+  fonts/                         Martian Mono and Literata from Google Fonts, latin and latin-ext
   images/, images/og/, videos/
   _redirects                     301s for posts that changed address
+  _headers                       caches js/, css/ and fonts/ for a year
   favicon.svg, favicon.ico, apple-touch-icon.png
 site/                            Hugo's output, committed; everything Cloudflare publishes. Never edit it.
 tools/publish.sh                 builds site/, renders the share cards, builds again
@@ -44,7 +49,7 @@ Every page has the same frame, from `layouts/_default/baseof.html`. Only the con
 ```text
 <head>
   inline theme script ── sets <html data-theme> before first paint
-  Google Fonts (Martian Mono, Literata), /css/style.css, og: meta
+  font preloads, /css/style.<hash>.css, og: meta
 <body data-page="home | list | post | page">
   canvas#bits             fixed, full screen, behind everything: the binary margins
   div.redraw-edge         the cursor bar that rides view transitions; hidden otherwise
@@ -53,17 +58,18 @@ Every page has the same frame, from `layouts/_default/baseof.html`. Only the con
     .buf                  the column; every .row inside is a line
       .row.nav …          lines the cursor can sit on
       .row …              lines that only get a number (tildes)
+    #prose + inline lines.js  marks each block of a post as a line, before first paint
   .status                 fixed at the bottom
     .bar                  NORMAL │ : │ / │ ~/braynm.com/<file> │ utf-8 type 3:1 │ 42%
     #cmdline              messages, or the : and / input
-  <script type="module" src="/js/main.js">
+  <script type="module" src="/js/main.<hash>.js">
 ```
 
 The theme script is inline and not deferred, so the page never paints in the wrong theme. With no saved choice it leaves the system setting in charge.
 
 ## JavaScript
 
-`main.js` reads `body[data-page]` and wires the modules that page needs.
+`main.js` reads `body[data-page]` and wires the modules that page needs. Hugo bundles it and its imports into one file with esbuild (`js.Build` in `baseof.html`), minified so the bundle carries no local paths, and names it by its hash. A changed file gets a new name, so `_headers` can cache `js/` and `css/` for a year.
 
 ```text
                          main.js
@@ -71,8 +77,8 @@ The theme script is inline and not deferred, so the page never paints in the wro
         ┌───────────────────┼─────────────────────────┬──────────────┐
         ▼                   ▼                         ▼              ▼
    post.js            bits.js ◄──── set(text) ──── editor.js ──► easter.js, views.js
-   preparePost()      createBits()                createEditor()   :q! shell, :help 42 …
-   rows + folds       canvas#bits, .dump strip    rows, cursor,        │
+   fold clicks, yy    createBits()                createEditor()   :q! shell, :help 42 …
+        │             canvas#bits, .dump strip    rows, cursor,        │
         │                   ▲                     statusline,          │
         │                   │ recolor()           : / VISUAL, keys,    │
         ▼                   │                     :set bg ─────────────┘
@@ -84,7 +90,7 @@ The theme script is inline and not deferred, so the page never paints in the wro
    tutor.js listens through ed.on() on the Tutor page.
 ```
 
-The order matters. `preparePost()` runs before `createEditor()`, because it turns each block of a post into a line, and the editor collects the lines when it starts.
+`lines.js` is not part of the bundle. `partials/lines.html` inlines it right after `#prose`, so it runs while the page parses, before the first paint and before `createEditor()` collects the lines. It gives each block of a post the `row nav` classes and recounts each fold's lines. `single.html` renders the folds themselves, with line counts estimated at build time. Doing either in the bundle moved the post down after it had painted. The count is padded to three characters in a monospaced font, so correcting it never moves anything.
 
 ### Lines and the cursor
 
@@ -121,7 +127,7 @@ Search uses the CSS Custom Highlight API: matches are `Range`s painted with `::h
 
 `bits.pulse(el)` starts a 0.9s beam: the margin row nearest the top of `el` draws in plum and fades, and it follows `el` if the page scrolls. `editor.js` calls it whenever the cursor moves to another line. It is off with reduced motion.
 
-`bits.js` draws on a fixed full-screen canvas every animation frame:
+`bits.js` checks a fixed full-screen canvas every animation frame:
 
 ```text
 bits.set(text) ── UTF-8 bytes of text, previous bytes kept with a timestamp
@@ -134,6 +140,8 @@ frame ──┤ margin = left edge of .buf
 per byte: unchanged and not near the mouse ─► one fillText of 8 bits
           otherwise ─► bit by bit: flipped bits flash plum, bits near the mouse glow teal
 ```
+
+The drift is rounded to whole device pixels, and a canvas redraws only when its key changes: size, pixel density, drift, mouse position, theme, or the time while bits are flipping or a beam fades. That is about 12 redraws a second at 2× instead of 60.
 
 Every flash and glow is multiplied by the same vertical fade as the rest of the column, so nothing lights up in the faded corners. Colors are read from the CSS tokens and read again when the theme changes.
 
@@ -150,11 +158,13 @@ image ─► sample at 2× the character grid
 canvas: a 40% wash of each cell's color, then the character in that color, toned toward the ink color
 ```
 
+Every canvas here is GPU-backed and read back once. The first draw on a `willReadFrequently` canvas costs about 180ms, more than 700ms on a throttled phone, so `buildRamp` draws all the characters on one canvas and reads it once.
+
 The drawing re-renders when its width or the pixel density changes, and when the theme changes. Theme redraws are registered with `ed.onTheme(fn)`; the theme switch waits for them inside the view transition, so the repaint never captures a drawing in the old colors. Clicking toggles the `revealed` class, which swaps the drawing for the photo with the same repaint animation as the theme switch.
 
 ## Styling
 
-`css/style.css` defines the palette as tokens on `:root`, with a `[data-theme="dark"]` override. Each color has a syntax role: plum for keywords, ochre for strings, teal for functions, dim for comments. Light is sage `#DCE3D3`; dark is `#182017`. Martian Mono sets everything except post prose, which is Literata. Every `clamp()` keeps a `rem` term so text follows browser zoom. Code blocks scroll instead of wrapping.
+`css/style.css` defines the palette as tokens on `:root`, with a `[data-theme="dark"]` override. Each color has a syntax role: plum for keywords, ochre for strings, teal for functions, dim for comments. Light is sage `#DCE3D3`; dark is `#182017`. Martian Mono sets everything except post prose, which is Literata. Both are self-hosted, and `baseof.html` preloads Martian Mono, and Literata on pages with prose. Until they load, Menlo, Consolas, Droid Sans Mono and Georgia stand in through `@font-face` rules scaled to the same widths, so nothing reflows when the fonts swap. A new font gets a new file name, because `_headers` caches `fonts/` for a year. Every `clamp()` keeps a `rem` term so text follows browser zoom. Code blocks scroll instead of wrapping.
 
 The theme switch and page-to-page navigation both use view transitions. `::view-transition-new(root)` reveals the new page top to bottom in steps, like a terminal redraw. Every page has a static `div.redraw-edge`, the cursor bar on the repaint's leading edge. It is `display: none` except under `:root:active-view-transition`, so it shows on theme switches and page loads alike; it must be in the HTML because `main.js` runs too late for a page load's first frame. It has its own `view-transition-name`, and its `sweep` keyframes use the same duration and step count as `redraw`, so the bar stays on the clip edge. Change both together.
 
@@ -172,7 +182,7 @@ The browser bar color comes from the `theme-color` meta tags, which only know th
 2. Fill in the front matter: `title`, `excerpt` (the line under the title), and optionally `description` (search and share text, if different) and `photo` (a file in `static/images/`, drawn at the end of the post). Delete `draft: true` when it is ready; drafts are never built.
 3. Write the post in Markdown. `##` headings become the folds. Fenced code blocks get highlighting, line numbers and a statusline with `[lang]`, the line and byte counts and the `yy` button; `render-codeblock.html` counts them at build time, and the line numbers are a CSS counter, so `yy` never copies them. A paragraph that starts with `**Note:**`, `**Tip:**` or `**Warning:**` gets the `note` class from `single.html`. A video is `{{< video "file.mp4" >}}` on a line of its own, with the file in `static/videos/`.
 4. Preview with `hugo server` at http://localhost:1313.
-5. Run `tools/publish.sh`, then commit `content/`, `static/` and `site/` together.
+5. Run `tools/publish.sh`, then commit the sources and `site/` together.
 
 Hugo works out everything that used to be typed by hand: the date, read time and word count, the statusline message with the file's real line and byte counts, the photo's size, the home and Writing lists, the `:bprev` and `:bnext` links, the feed and the sitemap.
 

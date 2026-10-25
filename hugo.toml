@@ -3,6 +3,8 @@ languageCode = 'en'
 title = 'Bryan Madrid'
 # Cloudflare serves site/ as committed; it never runs Hugo.
 publishDir = 'site'
+# CSS and JS are named by their hash, so stale copies would pile up in site/ without this.
+cleanDestinationDir = true
 disableKinds = ['taxonomy', 'term']
 disableHugoGeneratorInject = true
 
@@ -23,3 +25,6 @@ unsafe = true
 [markup.highlight]
 noClasses = false
 guessSyntax = false
+
+[build]
+noJSConfigInAssets = true

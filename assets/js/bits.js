@@ -3,6 +3,8 @@ const ROW_H = 18;
 const FLIP = 900;
 const GLOW = 160;
 const BEAM = 900;
+// A change has finished flipping by SETTLE: its last bit starts about 880ms in and flips for FLIP.
+const SETTLE = FLIP + 900;
 const enc = s => [...new TextEncoder().encode(s + '  ')];
 
 export function createBits({canvas, strip, column, reduce}) {
@@ -13,6 +15,7 @@ export function createBits({canvas, strip, column, reduce}) {
   let mx = -1e4;
   let my = -1e4;
   let sidesOn = null;
+  let epoch = 0;
   // When the cursor moves, the margin row level with the new cursor line lights up in plum and fades,
   // like a scanner line across the dump. It follows the line if the page scrolls while it fades.
   let beamEl = null;
@@ -36,6 +39,7 @@ export function createBits({canvas, strip, column, reduce}) {
   const recolor = () => {
     const cs = getComputedStyle(document.documentElement);
     for (const k of ['dim', 'plum', 'teal']) C[k] = cs.getPropertyValue('--' + k).trim();
+    epoch++;
   };
   recolor();
 
@@ -57,12 +61,24 @@ export function createBits({canvas, strip, column, reduce}) {
     }
     const g = c.getContext('2d');
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    g.clearRect(0, 0, w, h);
     g.font = '500 11px "Martian Mono", monospace';
     g.textBaseline = 'middle';
     g.cw = g.measureText('0').width;
     return g;
   };
+
+  // The drift moves whole device pixels, so most frames would draw exactly what is already there.
+  // A canvas redraws only when its key changes; while bits flip or a beam fades, the time is in the key.
+  const snap = rows => {
+    const px = ROW_H * (devicePixelRatio || 1);
+    return Math.round(rows * px) / px;
+  };
+  const unchanged = (c, key) => {
+    if (c.key === key) return true;
+    c.key = key;
+    return false;
+  };
+  const moving = (now, beam) => (beam || now - t0 < SETTLE ? now : 0);
 
   // Whole bytes are one fillText; only bytes that are flipping or under the cursor glow draw bit by bit.
   const drawByte = (g, now, p, x, y, alpha, delay, vis, beam = 0) => {
@@ -96,13 +112,15 @@ export function createBits({canvas, strip, column, reduce}) {
     const g = fit(canvas, W, H);
     const usable = column.getBoundingClientRect().left + 12;
     const n = Math.min(6, Math.floor((usable / g.cw - 9) / 9), Math.floor((usable / g.cw - 1) / 11));
+    const drift = snap((reduce ? 0 : now / 1000 * 0.35) + scrollY * 0.25 / ROW_H);
+    const lit = beamAt(now);
+    if (unchanged(canvas, n < 1 ? 'off' : [epoch, W, H, devicePixelRatio, g.cw, n, drift, mx, my, moving(now, lit)].join())) return n >= 1;
+    g.clearRect(0, 0, W, H);
     if (n < 1) return false;
-    const drift = (reduce ? 0 : now / 1000 * 0.35) + scrollY * 0.25 / ROW_H;
     const first = Math.floor(drift);
     const yoff = -(drift - first) * ROW_H;
     const fadeH = H * 0.2;
     const bottom = H - 64;
-    const lit = beamAt(now);
     for (let r = 0; r * ROW_H + yoff < H; r++) {
       const y = yoff + r * ROW_H + ROW_H / 2;
       const av = Math.max(0, Math.min(1, (y - 8) / fadeH, (bottom - y) / fadeH));
@@ -134,8 +152,10 @@ export function createBits({canvas, strip, column, reduce}) {
     const h = strip.clientHeight;
     if (!w) return;
     const g = fit(strip, w, h);
+    const drift = snap(reduce ? 0 : now / 1000 * 0.35);
+    if (unchanged(strip, [epoch, w, h, devicePixelRatio, g.cw, drift, mx, my, moving(now)].join())) return;
+    g.clearRect(0, 0, w, h);
     const n = Math.max(1, Math.floor(w / (9 * g.cw)));
-    const drift = reduce ? 0 : now / 1000 * 0.35;
     const first = Math.floor(drift);
     const yoff = -(drift - first) * ROW_H;
     for (let r = 0; r * ROW_H + yoff < h; r++) {

@@ -1,6 +1,6 @@
 # braynm.com
 
-Hugo builds the site from `content/` (Markdown), `layouts/` (templates) and `static/` (CSS, ES modules, images, videos) into `site/`, which is committed. Cloudflare serves `site/` as it is and never runs Hugo; nothing else in this repository is published. Never edit `site/` by hand: change the sources, run `hugo`, and commit the sources and `site/` together. Run `tools/publish.sh` instead when a title or excerpt changes, so the share cards are redrawn.
+Hugo builds the site from `content/` (Markdown), `layouts/` (templates), `assets/` (CSS and ES modules, fingerprinted) and `static/` (fonts, images, videos) into `site/`, which is committed. Cloudflare serves `site/` as it is and never runs Hugo; nothing else in this repository is published. Never edit `site/` by hand: change the sources, run `hugo`, and commit the sources and `site/` together. Run `tools/publish.sh` instead when a title or excerpt changes, so the share cards are redrawn.
 
 - What visitors see: `docs/HOW-IT-WORKS.md`
 - How it is built, and the steps to add a post: `docs/ARCHITECTURE.md`

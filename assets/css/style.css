@@ -1,5 +1,21 @@
 /* braynm.com, "Modal": the site is a Vim buffer. */
 
+/* Google Fonts, self-hosted: latin and latin-ext only. */
+@font-face { font-family: "Martian Mono"; font-style: normal; font-weight: 100 800; font-stretch: 75% 112.5%; font-display: swap; src: url(/fonts/martian-mono-latin-ext.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Martian Mono"; font-style: normal; font-weight: 100 800; font-stretch: 75% 112.5%; font-display: swap; src: url(/fonts/martian-mono-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Literata"; font-style: normal; font-weight: 400 700; font-display: swap; src: url(/fonts/literata-latin-ext.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Literata"; font-style: normal; font-weight: 400 700; font-display: swap; src: url(/fonts/literata-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Literata"; font-style: italic; font-weight: 400 700; font-display: swap; src: url(/fonts/literata-italic-latin-ext.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Literata"; font-style: italic; font-weight: 400 700; font-display: swap; src: url(/fonts/literata-italic-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+/* Until those arrive, local fonts scaled to the same widths stand in, so the text does not reflow when they swap:
+   Martian Mono's 0.65em advance at wdth 87.5, and Literata's width on the Vim post's prose. */
+@font-face { font-family: "Martian Mono Menlo"; src: local("Menlo Regular"), local("Menlo-Regular"); size-adjust: 107.96%; ascent-override: 92.63%; descent-override: 18.53%; line-gap-override: 0%; }
+@font-face { font-family: "Martian Mono Consolas"; src: local("Consolas"); size-adjust: 118.22%; ascent-override: 84.59%; descent-override: 16.92%; line-gap-override: 0%; }
+@font-face { font-family: "Martian Mono Droid"; src: local("Droid Sans Mono"), local("DroidSansMono"); size-adjust: 108.32%; ascent-override: 92.32%; descent-override: 18.46%; line-gap-override: 0%; }
+@font-face { font-family: "Literata Georgia"; font-style: normal; src: local("Georgia"); size-adjust: 106.42%; ascent-override: 110.60%; descent-override: 28.94%; line-gap-override: 0%; }
+@font-face { font-family: "Literata Georgia"; font-style: italic; src: local("Georgia Italic"), local("Georgia-Italic"); size-adjust: 97.98%; ascent-override: 120.13%; descent-override: 31.43%; line-gap-override: 0%; }
+
 :root {
   --bg: #DCE3D3;
   --ink: #1E261C;
@@ -18,8 +34,8 @@
   --mode: var(--plum);
   --mode-ink: var(--on);
 
-  --mono: "Martian Mono", ui-monospace, Menlo, monospace;
-  --serif: "Literata", Georgia, serif;
+  --mono: "Martian Mono", "Martian Mono Menlo", "Martian Mono Consolas", "Martian Mono Droid", ui-monospace, Menlo, monospace;
+  --serif: "Literata", "Literata Georgia", Georgia, serif;
   --gutter: 48px;
   --pad: 24px;
   color-scheme: light;

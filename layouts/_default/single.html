@@ -22,11 +22,22 @@
     {{- end }}
   </header>
   <div class="dump" aria-hidden="true"><canvas></canvas></div>
-  <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
+  <nav class="folds" id="folds" aria-label="Sections in this post">
+  {{- /* Rendered here so the folds never push the post down. lines.js recounts the lines in the browser. */ -}}
+  {{- $sections := after 1 (split (replaceRE `<h([123]) id=` "\x00<h$1 id=" .Content) "\x00") }}
+  {{- if ge (len $sections) 2 }}
+    {{- range $sections }}
+      {{- $h := index (findRESubmatch `^<h[123] id="([^"]+)">(?:<span class="hash"[^>]*>[^<]*</span>)?(.*?)</h[123]>` .) 0 }}
+      {{- $lines := len (findRE `(?m)^<(?:p|h[1-6]|div|ul|ol|blockquote|figure|table|hr|pre)[ >]` (replaceRE `(?s)(<(?:blockquote|ul|ol)>).*?</(?:blockquote|ul|ol)>` "$1" .)) }}
+    <a class="fold" href="#{{ index $h 1 }}" data-target="{{ index $h 1 }}"><span class="lbl">+--{{ printf "%3d" $lines }} lines: {{ trim (index $h 2 | plainify) " \n\t" | safeHTML }}</span><span class="lead" aria-hidden="true"></span></a>
+    {{- end }}
+  {{- end -}}
+  </nav>
 
   <div class="prose" id="prose">
 {{ .Content | replaceRE `<p><strong>(Note|Tip|Warning):</strong>` `<p class="note"><strong>$1:</strong>` | safeHTML }}
   </div>
+  {{ partial "lines.html" . }}
 
   <footer class="eof">
     {{- with .Params.photo }}

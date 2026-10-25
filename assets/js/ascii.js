@@ -9,18 +9,21 @@ const INK = {light: [30, 38, 28], dark: [211, 220, 198]};
 
 let ramp;
 // Measure each character's real coverage in Martian Mono once, then sort light to dark.
+// All of them go on one canvas and are read back once: a willReadFrequently canvas, or a read per character,
+// costs most of a second on a throttled phone. Each sits in a 40px cell with 8px between, so none bleeds into the next.
 function buildRamp(font) {
+  const chars = [...new Set(CHARS)];
   const c = document.createElement('canvas');
-  c.width = c.height = 40;
-  const g = c.getContext('2d', {willReadFrequently: true});
+  c.width = chars.length * 48;
+  c.height = 40;
+  const g = c.getContext('2d');
   g.font = font.replace(/\d+px/, '32px');
   g.textBaseline = 'top';
-  const cover = [...new Set(CHARS)].map(ch => {
-    g.clearRect(0, 0, 40, 40);
-    g.fillText(ch, 4, 2);
-    const d = g.getImageData(0, 0, 40, 40).data;
+  chars.forEach((ch, i) => g.fillText(ch, i * 48 + 4, 2));
+  const d = g.getImageData(0, 0, c.width, 40).data;
+  const cover = chars.map((ch, i) => {
     let a = 0;
-    for (let i = 3; i < d.length; i += 4) a += d[i];
+    for (let y = 0; y < 40; y++) for (let x = i * 48; x < i * 48 + 40; x++) a += d[(y * c.width + x) * 4 + 3];
     return {ch, a};
   });
   const max = Math.max(...cover.map(c => c.a));
@@ -60,7 +63,7 @@ async function draw(fig, img, cv, opts) {
   const s = document.createElement('canvas');
   s.width = sw;
   s.height = sh;
-  const sg = s.getContext('2d', {willReadFrequently: true});
+  const sg = s.getContext('2d');
   sg.imageSmoothingQuality = 'high';
   sg.drawImage(img, 0, 0, sw, sh);
   const px = sg.getImageData(0, 0, sw, sh).data;

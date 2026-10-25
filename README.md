@@ -37,7 +37,7 @@ Cloudflare Pages builds from the `main` branch of `github.com/braynm/braynm.com`
 | Build command | (empty) |
 | Build output directory | `site` |
 
-Only `site/` is published, and Cloudflare never runs Hugo, so build and commit `site/` before pushing. The sources (`content/`, `layouts/`, `static/`, `hugo.toml`), `README.md`, `CLAUDE.md`, `docs/` and `tools/` stay in the repository and are never served.
+Only `site/` is published, and Cloudflare never runs Hugo, so build and commit `site/` before pushing. The sources (`content/`, `layouts/`, `assets/`, `static/`, `hugo.toml`), `README.md`, `CLAUDE.md`, `docs/` and `tools/` stay in the repository and are never served.
 
 ## Share cards
 

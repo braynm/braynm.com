@@ -30,10 +30,9 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
+<link rel="preload" href="/fonts/martian-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/literata-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/style.7c0369a5f43bc2aa0cb2aa1930bcb8a17c38e3ac5541c626604a2105ff427c28.css">
 </head>
 
 <body data-page="page">
@@ -60,7 +59,9 @@
     <h1 class="title">About</h1>
   </header>
   <div class="dump" aria-hidden="true"><canvas></canvas></div>
-  <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
+  <nav class="folds" id="folds" aria-label="Sections in this post">
+    <a class="fold" href="#about-me" data-target="about-me"><span class="lbl">+--  7 lines: About Me</span><span class="lead" aria-hidden="true"></span></a>
+    <a class="fold" href="#personal-project" data-target="personal-project"><span class="lbl">+--  2 lines: Personal Project</span><span class="lead" aria-hidden="true"></span></a></nav>
 
   <div class="prose" id="prose">
 <h2 id="about-me"><span class="hash" aria-hidden="true">## </span>About Me</h2>
@@ -74,6 +75,8 @@
 <p>I’m excited to share one of my projects with you called <a href="https://grocerybudgetph.com">GroceryBudget</a> an innovative app designed to help you effectively manage your grocery budget. With GroceryBudget, you can effortlessly track your expenses, set spending limits, and stay on top of your grocery purchases. It provides a user-friendly interface that allows you to conveniently monitor your spending habits, identify areas for optimization, and make informed decisions while grocery shopping. Whether you’re trying to save money or simply stay organized, GroceryBudget is here to make your grocery shopping experience efficient and cost-effective. Stay tuned for more updates and features coming soon!</p>
 
   </div>
+  <script>(()=>{const t=document.getElementById("prose");if(!t)return;const e=[...t.children].filter(e=>e.textContent.trim()||e.querySelector("img, video"));e.forEach(e=>e.classList.add("row","nav")),e.filter(e=>e.matches("h1, h2, h3")).forEach((t,n,s)=>{const o=document.querySelector(`#folds [data-target="${t.id}"] .lbl`);if(!o)return;const i=n+1<s.length?e.indexOf(s[n+1]):e.length,a=i-e.indexOf(t),r=[...t.childNodes].filter(e=>!e.classList||!e.classList.contains("hash")).map(e=>e.textContent).join("").trim();o.textContent=`+--${String(a).padStart(3," ")} lines: ${r}`})})()</script>
+
 
   <footer class="eof">
     <div class="row tilde" aria-hidden="true">~</div>
@@ -95,7 +98,6 @@
   <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">"about.md" 23L, 2104B
 </span></div>
 </div>
-
-<script type="module" src="/js/main.js"></script>
+<script type="module" src="/js/main.a47a450985402fbe0ca6b7b1d4af1ab84f876f6d88fae31398e153a155621612.js"></script>
 </body>
 </html>

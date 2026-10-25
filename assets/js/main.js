@@ -1,7 +1,7 @@
 import {createBits} from './bits.js';
 import {createEditor} from './editor.js';
 import {startHero} from './hero.js';
-import {preparePost, wirePost} from './post.js';
+import {wirePost} from './post.js';
 import {initNetrw} from './netrw.js';
 import {initEaster} from './easter.js';
 import {initAscii} from './ascii.js';
@@ -11,8 +11,6 @@ import {initTutor} from './tutor.js';
 const page = document.body.dataset.page;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isDoc = page === 'post' || page === 'page';
-
-if (isDoc) preparePost();
 
 const bits = createBits({
   canvas: document.getElementById('bits'),

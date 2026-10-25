@@ -30,10 +30,9 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
+<link rel="preload" href="/fonts/martian-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/literata-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/style.7c0369a5f43bc2aa0cb2aa1930bcb8a17c38e3ac5541c626604a2105ff427c28.css">
 </head>
 
 <body data-page="page">
@@ -57,7 +56,15 @@
     <p class="excerpt"><span aria-hidden="true"># </span>Seven short lessons in the keys this site understands, the way vimtutor teaches Vim.</p>
   </header>
   <div class="dump" aria-hidden="true"><canvas></canvas></div>
-  <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
+  <nav class="folds" id="folds" aria-label="Sections in this post">
+    <a class="fold" href="#tutor-move" data-target="tutor-move"><span class="lbl">+--  3 lines: Lesson 1: Move down and up</span><span class="lead" aria-hidden="true"></span></a>
+    <a class="fold" href="#tutor-ends" data-target="tutor-ends"><span class="lbl">+--  2 lines: Lesson 2: Go to the top and the bottom</span><span class="lead" aria-hidden="true"></span></a>
+    <a class="fold" href="#tutor-sections" data-target="tutor-sections"><span class="lbl">+--  2 lines: Lesson 3: Jump between sections</span><span class="lead" aria-hidden="true"></span></a>
+    <a class="fold" href="#tutor-search" data-target="tutor-search"><span class="lbl">+--  3 lines: Lesson 4: Search</span><span class="lead" aria-hidden="true"></span></a>
+    <a class="fold" href="#tutor-yank" data-target="tutor-yank"><span class="lbl">+--  3 lines: Lesson 5: Copy a line</span><span class="lead" aria-hidden="true"></span></a>
+    <a class="fold" href="#tutor-commands" data-target="tutor-commands"><span class="lbl">+--  3 lines: Lesson 6: Run a command</span><span class="lead" aria-hidden="true"></span></a>
+    <a class="fold" href="#tutor-quit" data-target="tutor-quit"><span class="lbl">+--  2 lines: Lesson 7: Quit</span><span class="lead" aria-hidden="true"></span></a>
+    <a class="fold" href="#tutor-summary" data-target="tutor-summary"><span class="lbl">+--  2 lines: Summary</span><span class="lead" aria-hidden="true"></span></a></nav>
 
   <div class="prose" id="prose">
 <p>Every page on this site is a Vim buffer, and this one teaches you to move around it. Do what a lesson says and a ✓ appears beside its heading. Your progress stays in this browser.</p>
@@ -95,6 +102,8 @@
 </ul>
 
   </div>
+  <script>(()=>{const t=document.getElementById("prose");if(!t)return;const e=[...t.children].filter(e=>e.textContent.trim()||e.querySelector("img, video"));e.forEach(e=>e.classList.add("row","nav")),e.filter(e=>e.matches("h1, h2, h3")).forEach((t,n,s)=>{const o=document.querySelector(`#folds [data-target="${t.id}"] .lbl`);if(!o)return;const i=n+1<s.length?e.indexOf(s[n+1]):e.length,a=i-e.indexOf(t),r=[...t.childNodes].filter(e=>!e.classList||!e.classList.contains("hash")).map(e=>e.textContent).join("").trim();o.textContent=`+--${String(a).padStart(3," ")} lines: ${r}`})})()</script>
+
 
   <footer class="eof">
     <div class="row tilde" aria-hidden="true">~</div>
@@ -116,7 +125,6 @@
   <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">"tutor.md" 55L, 2393B
 </span></div>
 </div>
-
-<script type="module" src="/js/main.js"></script>
+<script type="module" src="/js/main.a47a450985402fbe0ca6b7b1d4af1ab84f876f6d88fae31398e153a155621612.js"></script>
 </body>
 </html>
