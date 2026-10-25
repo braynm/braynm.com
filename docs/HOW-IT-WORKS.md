@@ -6,7 +6,7 @@ This page describes the site from a visitor's point of view. For how it is built
 
 Every page is a file open in Vim. Each block of content is a line with a number in the left gutter. One line is the cursor line, and the gutter shows the other numbers relative to it, like `set relativenumber`. The bar at the bottom is Vim's statusline: the mode, the file path, the file type, the cursor position and how far down the page you are. Below it is the command line, where messages appear.
 
-The side margins on wide screens show the current line as raw bits, the way Vim shows a file after `:%!xxd -b`. When the line changes, only the bits that differ flip, in plum. Bits near the mouse pointer light up in teal. On narrow screens the dump becomes a strip under the page title.
+The side margins on wide screens show the current line as raw bits, the way Vim shows a file after `:%!xxd -b`. When the line changes, only the bits that differ flip, in plum. Bits near the mouse pointer light up in teal. On posts and the About page the margins are dimmer, so they stay out of the way of reading. On narrow screens the dump becomes a strip under the page title.
 
 ## Pages
 
@@ -70,6 +70,10 @@ Post photos are drawn with characters that are all Vim normal-mode commands, col
 | `u` | `Already at oldest change` |
 
 The page source has a hint for anyone who opens it.
+
+## Printing
+
+Printing a page drops the editor around it: no statusline, margins, line numbers, cursor line, folds or videos (each video leaves its file name). It prints in the light colors on white, and links in a post print their address after the text.
 
 ## Phones
 
