@@ -2,6 +2,7 @@
 // visitor sits idle at the top of the page, it runs one of the site's own commands instead and then undoes it,
 // so the editor shows what it can do without anyone typing.
 import {decode, jobsFor} from './decode.js';
+import {nextScheme} from './editor.js';
 
 const SUBS = ['Elixir', 'TypeScript', 'React', 'with AI', 'pure code', 'notes', 'Elixir'];
 const other = ed => ed.theme() === 'dark' ? 'light' : 'dark';
@@ -18,6 +19,12 @@ const TOUR = [
     const to = other(ed);
     ed.setBg(to, false);
     return () => { if (ed.theme() === to) ed.setBg(was, false); };
+  }},
+  {cmd: ed => `colorscheme ${nextScheme(ed.scheme())}`, hold: 3200, run: ed => {
+    const was = ed.scheme();
+    const to = nextScheme(was);
+    ed.setScheme(to, false);
+    return () => { if (ed.scheme() === to) ed.setScheme(was, false); };
   }},
 ];
 const IDLE = 4000;

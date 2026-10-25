@@ -8,10 +8,15 @@
 
 <script>
 (function () {
-  var t = null;
-  try { t = localStorage.getItem('bg'); } catch (e) {}
+  var t = null, s = null;
+  try { t = localStorage.getItem('bg'); s = localStorage.getItem('colors'); } catch (e) {}
+  var bars = {modal: ['#DCE3D3', '#182017'], ember: ['#EDE3D3', '#1E1814'], phosphor: ['#F3F5EF', '#0A0F0B']};
+  if (!bars[s]) s = 'modal';
+  document.documentElement.dataset.scheme = s;
   document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  if (t) document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) { m.content = t === 'dark' ? '#182017' : '#DCE3D3'; });
+  document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+    m.content = bars[s][(t || (/dark/.test(m.media) ? 'dark' : 'light')) === 'dark' ? 1 : 0];
+  });
 })();
 </script>
 {{- $is404 := eq .Kind "404" }}
@@ -53,7 +58,8 @@
     <a href="/post/">writing</a>
     <a href="/about/">about</a>
     <a href="{{ site.Params.github }}">github</a>
-    <button class="bg" id="bg-toggle" type="button">:set bg=dark</button>
+    <button class="run" id="bg-toggle" type="button">:set bg=dark</button>
+    <button class="run" id="colo-toggle" type="button">:colo ember</button>
   </nav>
 </header>
 <main id="buf">

@@ -48,12 +48,12 @@ Every page has the same frame, from `layouts/_default/baseof.html`. Only the con
 
 ```text
 <head>
-  inline theme script ── sets <html data-theme> before first paint
+  inline theme script ── sets <html data-theme data-scheme> before first paint
   font preloads, /css/style.<hash>.css, og: meta
 <body data-page="home | list | post | page">
   canvas#bits             fixed, full screen, behind everything: the binary margins
   div.redraw-edge         the cursor bar that rides view transitions; hidden otherwise
-  header.top              ~/braynm.com  /post/<slug>.md      writing about github :set bg=…
+  header.top              ~/braynm.com  /post/<slug>.md      writing about github :set bg=… :colo …
   main#buf
     .buf                  the column; every .row inside is a line
       .row.nav …          lines the cursor can sit on
@@ -65,7 +65,7 @@ Every page has the same frame, from `layouts/_default/baseof.html`. Only the con
   <script type="module" src="/js/main.<hash>.js">
 ```
 
-The theme script is inline and not deferred, so the page never paints in the wrong theme. With no saved choice it leaves the system setting in charge.
+The theme script is inline and not deferred, so the page never paints in the wrong theme or colorscheme. With no saved choice it leaves the system setting in charge, and the scheme is `modal`.
 
 ## JavaScript
 
@@ -164,13 +164,13 @@ The drawing re-renders when its width or the pixel density changes, and when the
 
 ## Styling
 
-`css/style.css` defines the palette as tokens on `:root`, with a `[data-theme="dark"]` override. Each color has a syntax role: plum for keywords, ochre for strings, teal for functions, dim for comments. Light is sage `#DCE3D3`; dark is `#182017`. Martian Mono sets everything except post prose, which is Literata. Both are self-hosted, and `baseof.html` preloads Martian Mono, and Literata on pages with prose. Until they load, Menlo, Consolas, Droid Sans Mono and Georgia stand in through `@font-face` rules scaled to the same widths, so nothing reflows when the fonts swap. A new font gets a new file name, because `_headers` caches `fonts/` for a year. Every `clamp()` keeps a `rem` term so text follows browser zoom. Code blocks scroll instead of wrapping.
+`css/style.css` defines the palette as tokens on `:root`, with a `[data-theme="dark"]` override. Each color has a syntax role: plum for keywords, ochre for strings, teal for functions, dim for comments. Light is sage `#DCE3D3`; dark is `#182017`. That is the `modal` colorscheme. The others (`ember`, `phosphor`) redefine the same tokens under `[data-scheme="…"]`, for light and dark, and keep each pair at the contrast `modal` has: ink at 7:1 or more, accents and comments at 4.5:1 or more. Adding a scheme takes four places: its two blocks in `style.css`, `SCHEMES` in `editor.js`, and its two page colors in the `bars` table of the inline theme script. Martian Mono sets everything except post prose, which is Literata. Both are self-hosted, and `baseof.html` preloads Martian Mono, and Literata on pages with prose. Until they load, Menlo, Consolas, Droid Sans Mono and Georgia stand in through `@font-face` rules scaled to the same widths, so nothing reflows when the fonts swap. A new font gets a new file name, because `_headers` caches `fonts/` for a year. Every `clamp()` keeps a `rem` term so text follows browser zoom. Code blocks scroll instead of wrapping.
 
 The theme switch and page-to-page navigation both use view transitions. `::view-transition-new(root)` reveals the new page top to bottom in steps, like a terminal redraw. Every page has a static `div.redraw-edge`, the cursor bar on the repaint's leading edge. It is `display: none` except under `:root:active-view-transition`, so it shows on theme switches and page loads alike; it must be in the HTML because `main.js` runs too late for a page load's first frame. It has its own `view-transition-name`, and its `sweep` keyframes use the same duration and step count as `redraw`, so the bar stays on the clip edge. Change both together.
 
 The theme switch scans instead of wiping. It sets `data-redraw` to `down` (dark) or `up` (light), which turns off both CSS animations and makes the bar one band tall (`--bands`). Then, once the transition is ready, `editor.js` animates both pseudo-elements with the Web Animations API: 8 bands down the screen, each band printed left to right in 6 steps, 0.8s in all, with the bar's transform keyframes matching the clip-path keyframes. `up` runs the same scan from the bottom right. `BANDS`, `COLS` and `SCAN` in `editor.js` set the shape. It also sets `data-syntax-off="comment string keyword function"` inside the update callback; each name sets one token (`--dim`, `--ochre`, `--plum`, `--teal`) to `--ink` inside the header and `#buf`. Starting 180ms after the repaint ends, `editor.js` removes one name every 70ms, so the highlight groups get their colors back in order. While the scan runs, `decode()` from `decode.js` flips the letters and digits of each heading on screen (`h1`–`h3`, the home and project titles, the contact line) through hex digits every 45ms. Each heading starts when the scan reaches its band and settles left to right over 450ms. It changes only the text nodes' characters and puts the originals back, and the headings are monospaced, so nothing reflows. A second switch mid-scan settles the first one before it starts. Then the button's label changes by substitution, the way the home headline does. With reduced motion the switch is a 0.15s crossfade (`data-redraw="fade"`) with none of this.
 
-The browser bar color comes from the `theme-color` meta tags, which only know the system theme. The inline theme script sets both to a saved choice before first paint, and the theme switch sets them when the repaint reaches the top of the screen. Cross-document transitions are inside `prefers-reduced-motion: no-preference`; browsers without support load pages normally.
+The browser bar color comes from the `theme-color` meta tags, which only know the system theme. The inline theme script sets both to the scheme's colors and a saved choice before first paint, and the theme switch sets them when the repaint reaches the top of the screen. Cross-document transitions are inside `prefers-reduced-motion: no-preference`; browsers without support load pages normally.
 
 ## Share cards
 

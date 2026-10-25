@@ -1,6 +1,10 @@
 // The page as a Vim buffer: rows, a cursor, a statusline, a command line.
 import {decode, jobsFor} from './decode.js';
 
+// Each has a light and a dark palette in style.css, and its browser bar colors in baseof.html.
+export const SCHEMES = ['modal', 'ember', 'phosphor'];
+export const nextScheme = s => SCHEMES[(SCHEMES.indexOf(s) + 1) % SCHEMES.length];
+
 export function createEditor({bits, reduce, follow}) {
   const $ = id => document.getElementById(id);
   const modeEl = $('mode');
@@ -204,12 +208,18 @@ export function createEditor({bits, reduce, follow}) {
     say(wrapped || `/${find.q}  [${i + 1}/${hits.length}]`);
   };
 
-  // ---- :set background, the way Vim spells dark mode ----
-  const toggle = $('bg-toggle');
+  // ---- :set background, the way Vim spells dark mode, and :colorscheme ----
   let chosen = null;
   try { chosen = localStorage.getItem('bg'); } catch {}
   let bg = document.documentElement.dataset.theme;
-  const label = () => { toggle.textContent = `:set bg=${bg === 'dark' ? 'light' : 'dark'}`; };
+  let scheme = document.documentElement.dataset.scheme;
+  // Each header button is labeled with the command it runs next.
+  const buttons = [
+    {el: $('bg-toggle'), prefix: ':set bg=', next: () => bg === 'dark' ? 'light' : 'dark'},
+    {el: $('colo-toggle'), prefix: ':colo ', next: () => nextScheme(scheme)},
+  ];
+  const show = b => { b.el.textContent = b.prefix + b.next(); };
+  const label = () => buttons.forEach(show);
   // Anything painted from the theme's colors redraws here, so the view transition waits for it
   // instead of capturing the old colors and popping to the new ones halfway through the repaint.
   const themed = [bits.recolor];
@@ -258,29 +268,30 @@ export function createEditor({bits, reduce, follow}) {
   // After the repaint, highlight groups come back one at a time, in the order a colorscheme sets them.
   const GROUPS = ['comment', 'string', 'keyword', 'function'];
   let repaint = null;
-  // The button's label changes by substitution, the way the home headline does.
-  const relabel = async t => {
-    const from = toggle.textContent.replace(':set bg=', '');
-    const to = bg === 'dark' ? 'light' : 'dark';
+  // A button's label changes by substitution, the way the home headline does.
+  const relabel = t => Promise.all(buttons.map(async b => {
+    const from = b.el.textContent.slice(b.prefix.length);
+    const to = b.next();
     const word = (cls, text) => Object.assign(document.createElement('span'), {className: cls, textContent: text});
-    if (from === to) return label();
-    toggle.replaceChildren(':set bg=', word('hl-search', from));
+    if (from === to) return show(b);
+    b.el.replaceChildren(b.prefix, word('hl-search', from));
     await wait(260);
-    if (repaint !== t) return label();
-    toggle.replaceChildren(':set bg=', word('hl-new', to));
+    if (repaint !== t) return show(b);
+    b.el.replaceChildren(b.prefix, word('hl-new', to));
     await wait(700);
-    if (repaint === t) label();
-  };
-  // Dark rolls down from the top and light rises from the bottom, painted in plain ink with the colors
-  // arriving after. Reduced motion gets a short crossfade instead.
-  const applyBg = (next, animate) => {
-    bg = next;
+    if (repaint === t) show(b);
+  }));
+  // Dark and a new colorscheme roll down from the top, light rises from the bottom, painted in plain ink
+  // with the colors arriving after. Reduced motion gets a short crossfade instead.
+  const applyLook = (look, animate) => {
+    bg = look.theme ?? bg;
+    scheme = look.scheme ?? scheme;
     const go = () => {
-      root.dataset.theme = next;
+      Object.assign(root.dataset, look);
       return Promise.all(themed.map(fn => fn()));
     };
     if (!animate || !document.startViewTransition) { go(); label(); paintBar(); return; }
-    const motion = reduce ? 'fade' : next === 'light' ? 'up' : 'down';
+    const motion = reduce ? 'fade' : look.theme === 'light' ? 'up' : 'down';
     root.dataset.redraw = motion;
     const t = repaint = document.startViewTransition(() => {
       if (motion !== 'fade') root.dataset.syntaxOff = GROUPS.join(' ');
@@ -319,25 +330,30 @@ export function createEditor({bits, reduce, follow}) {
       try { localStorage.setItem('bg', next); } catch {}
     }
     say(`:set background=${next}`);
-    return applyBg(next, true);
+    return applyLook({theme: next}, true);
+  };
+  const setScheme = (next, keep = true) => {
+    if (keep) try { localStorage.setItem('colors', next); } catch {}
+    say(`:colorscheme ${next}`);
+    return applyLook({scheme: next}, true);
   };
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    if (!chosen) applyBg(e.matches ? 'dark' : 'light', true);
+    if (!chosen) applyLook({theme: e.matches ? 'dark' : 'light'}, true);
   });
-  // The button types its own label into the command line, the way you would, then presses Enter.
+  // A button types its own label into the command line, the way you would, then presses Enter.
   // Its bytes flip through the margins as they are typed, like a search query does.
   let busy = false;
-  toggle.addEventListener('click', async () => {
+  buttons.forEach(b => b.el.addEventListener('click', async () => {
     if (busy) return;
     busy = true;
-    const next = bg === 'dark' ? 'light' : 'dark';
+    const c = b.prefix + b.next();
     if (!reduce) {
       setMode('COMMAND');
       const typed = document.createElement('span');
       const cmdCaret = document.createElement('span');
       cmdCaret.className = 'caret';
       cmdline.replaceChildren(typed, cmdCaret);
-      for (const ch of `:set bg=${next}`) {
+      for (const ch of c) {
         typed.textContent += ch;
         bits.set(typed.textContent);
         await wait(18 + Math.random() * 24);
@@ -345,9 +361,9 @@ export function createEditor({bits, reduce, follow}) {
       await wait(140);
       setMode('NORMAL');
     }
-    await setBg(next)?.catch(() => {});
+    await run(c.slice(1))?.catch(() => {});
     busy = false;
-  });
+  }));
   label();
 
   // ---- : commands ----
@@ -361,12 +377,14 @@ export function createEditor({bits, reduce, follow}) {
     ['mail', go('mailto:hi@braynm.com')],
     ['noh', () => { paint('search', []); paint('search-cur', []); }],
     ['Tutor', go('/tutor/')],
-    ['help', () => say('Try :Tutor  :set bg=dark  :writing  :about  :42  :set list  :%!xxd  :q, or /elixir then n')],
+    ['help', () => say('Try :Tutor  :set bg=dark  :colo <Tab>  :writing  :about  :42  :set list  :%!xxd  :q, or /elixir then n')],
     ['q', () => say('E37: No write since last change (add ! to override)', true)],
   ]);
   const patterns = [
     [/^se(?:t)? (?:bg|background)=(dark|light)$/, m => setBg(m[1])],
     [/^se(?:t)? (?:bg|background)\?$/, () => say(`  background=${bg}`)],
+    [/^colo(?:r(?:scheme)?)?(?:\s+(\S+))?$/, ([, name]) => !name ? say(scheme)
+      : SCHEMES.includes(name) ? setScheme(name) : say(`E185: Cannot find color scheme '${name}'`, true)],
     [/^(\d+)$/, m => place(nav.indexOf(rows[Math.min(rows.length, +m[1]) - 1]) === -1 ? cur : nav.indexOf(rows[Math.min(rows.length, +m[1]) - 1]), true)],
   ];
   const run = c => {
@@ -390,6 +408,42 @@ export function createEditor({bits, reduce, follow}) {
     vv.addEventListener('scroll', lift);
   }
 
+  // Tab completes :colorscheme and its names, listed over the statusline the way Vim's wildmenu does.
+  // Shift-Tab steps back; typing, Enter or Escape puts the statusline back.
+  const fileEl = document.querySelector('.status .file');
+  const wildmenu = input => {
+    let wild = null;
+    const close = () => {
+      if (wild) fileEl.textContent = wild.file;
+      wild = null;
+    };
+    input.addEventListener('input', close);
+    input.addEventListener('blur', close);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === 'Escape') return close();
+      if (e.key !== 'Tab') return;
+      e.preventDefault();
+      const word = input.value.replace(/^:+\s*/, '');
+      if (word.length >= 3 && 'colorscheme'.startsWith(word)) {
+        input.value = input.value.slice(0, -word.length) + 'colorscheme ';
+        return;
+      }
+      if (!wild) {
+        const m = input.value.match(/^(:*\s*colo(?:r(?:scheme)?)?\s+)(\S*)$/);
+        const list = m ? SCHEMES.filter(n => n.startsWith(m[2])) : [];
+        if (!list.length) return;
+        wild = {head: m[1], list, i: -1, file: fileEl.textContent};
+      }
+      const n = wild.list.length;
+      wild.i = wild.i < 0 ? (e.shiftKey ? n - 1 : 0) : (wild.i + (e.shiftKey ? n - 1 : 1)) % n;
+      input.value = wild.head + wild.list[wild.i];
+      fileEl.replaceChildren(...wild.list.flatMap((name, k) => [
+        k ? '  ' : '',
+        Object.assign(document.createElement('span'), {className: k === wild.i ? 'wild cur' : 'wild', textContent: name}),
+      ]));
+    });
+  };
+
   const openCmd = lead => {
     setMode(lead === '/' ? 'SEARCH' : 'COMMAND');
     const input = document.createElement('input');
@@ -399,6 +453,7 @@ export function createEditor({bits, reduce, follow}) {
     cmdline.replaceChildren(lead, input);
     input.focus();
     if (lead === '/') input.addEventListener('input', () => { search(input.value); bits.set(input.value); });
+    else wildmenu(input);
     input.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         setMode('NORMAL');
@@ -512,6 +567,8 @@ export function createEditor({bits, reduce, follow}) {
     press: seq => { keys.get(seq)?.(); emit('key', seq); },
     setBg,
     theme: () => bg,
+    setScheme,
+    scheme: () => scheme,
     onTheme: fn => themed.push(fn),
     setMode,
     say,

@@ -57,6 +57,66 @@
   color-scheme: dark;
 }
 
+/* :colorscheme ember, warm paper and a banked fire */
+:root[data-scheme="ember"] {
+  --bg: #EDE3D3;
+  --ink: #2B211A;
+  --plum: #A2391B;
+  --ochre: #4F6116;
+  --teal: #1F5C85;
+  --dim: #6A5B4D;
+  --line: #DDD0BC;
+  --cur: #E2D5C1;
+  --code-bg: #E6DBC8;
+  --on: #FFFFFF;
+  --err: #A8231A;
+  --search: #F0B95A;
+}
+:root[data-scheme="ember"][data-theme="dark"] {
+  --bg: #1E1814;
+  --ink: #EADCC8;
+  --plum: #F2895E;
+  --ochre: #B9C46C;
+  --teal: #8AB8DB;
+  --dim: #A39280;
+  --line: #352B24;
+  --cur: #2A221C;
+  --code-bg: #241D18;
+  --on: #1E1814;
+  --err: #FF8A7A;
+  --search: #7D5A1E;
+}
+
+/* :colorscheme phosphor, a green CRT, and its printout */
+:root[data-scheme="phosphor"] {
+  --bg: #F3F5EF;
+  --ink: #0C120E;
+  --plum: #0A7434;
+  --ochre: #8A4D00;
+  --teal: #006A7E;
+  --dim: #4F5E53;
+  --line: #DEE3DA;
+  --cur: #E3E9DF;
+  --code-bg: #E9EDE4;
+  --on: #FFFFFF;
+  --err: #B3261E;
+  --search: #FFD36B;
+}
+:root[data-scheme="phosphor"][data-theme="dark"] {
+  --bg: #0A0F0B;
+  --ink: #C4F2CF;
+  --plum: #5CFF8F;
+  --ochre: #FFB547;
+  --teal: #5FD8E8;
+  --dim: #6F9679;
+  --line: #17211A;
+  --cur: #122017;
+  --code-bg: #0F1611;
+  --on: #0A0F0B;
+  --err: #FF6B5E;
+  --search: #5C4A12;
+}
+
 :root[data-mode="INSERT"] { --mode: var(--teal); }
 :root[data-mode="VISUAL"] { --mode: var(--ochre); }
 :root:is([data-mode="COMMAND"], [data-mode="SEARCH"]) { --mode: var(--bg); --mode-ink: var(--ink); }
@@ -105,8 +165,8 @@ header.top .crumb { color: var(--dim); margin-right: auto; }
 header.top .crumb a { color: var(--ink); }
 header.top nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 header.top a:hover, header.top .crumb a:hover { color: var(--plum); text-decoration: underline; }
-header.top .bg { all: unset; cursor: pointer; color: var(--dim); }
-header.top .bg:hover, header.top .bg:focus-visible { color: var(--plum); text-decoration: underline; }
+header.top .run { all: unset; cursor: pointer; color: var(--dim); }
+header.top .run:hover, header.top .run:focus-visible { color: var(--plum); text-decoration: underline; }
 
 /* ---------- buffer, lines, gutter ---------- */
 #buf { position: relative; z-index: 1; isolation: isolate; }
@@ -378,6 +438,8 @@ figcaption { margin-top: 10px; color: var(--dim); font: 400 0.75rem/1.6 var(--mo
 .status .bar { display: flex; align-items: stretch; background: var(--ink); color: var(--bg); }
 .status .mode { padding: 6px 12px; background: var(--mode); color: var(--mode-ink); font-weight: 700; transition: background-color 0.15s, color 0.15s; }
 .status .file { flex: 1; padding: 6px 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.status .file:has(.wild) { white-space: pre; }
+.status .file .wild.cur { background: var(--search); color: var(--ink); }
 .status .meta { padding: 6px 12px; color: var(--line); white-space: nowrap; }
 .status .pct { min-width: 56px; padding: 6px 12px; background: var(--teal); color: var(--on); text-align: right; }
 .cmdline { display: flex; gap: 2px; min-height: 28px; padding: 6px 12px; background: var(--bg); color: var(--ink); border-top: 1px solid var(--line); }
@@ -462,7 +524,7 @@ figcaption { margin-top: 10px; color: var(--dim); font: 400 0.75rem/1.6 var(--mo
 .buf { padding-bottom: calc(160px + env(safe-area-inset-bottom)); }
 
 @media (pointer: coarse) {
-  header.top nav a, header.top .bg { padding: 10px 0; }
+  header.top nav a, header.top .run { padding: 10px 0; }
   .status .key { padding: 10px 16px; font-size: 0.875rem; }
   .fold { padding: 8px 0; }
   .buffer { padding: 14px 0; }
@@ -492,7 +554,7 @@ figcaption { margin-top: 10px; color: var(--dim); font: 400 0.75rem/1.6 var(--mo
 
 /* ---------- print: the buffer without the editor around it ---------- */
 @media print {
-  :root, :root[data-theme="dark"] {
+  :root, :root[data-scheme][data-theme] {
     --bg: #FFFFFF; --ink: #1E261C; --plum: #8B2F5E; --ochre: #7B5100; --teal: #1B626B;
     --dim: #525C4C; --line: #CBD5BF; --code-bg: #F1F4EC; --on: #FFFFFF; --err: #A1261B;
     color-scheme: light;

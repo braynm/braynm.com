@@ -5,7 +5,6 @@
 const CHARS = " .'`^,:;-_~=+<>!?|/\\()[]{}*%#$@&0GgwbejkhlxpyuiorvnNWBEKHLXPYUIORVMm";
 const EDGE = ['|', '/', '-', '\\'];
 const LINE = 1.15;
-const INK = {light: [30, 38, 28], dark: [211, 220, 198]};
 
 let ramp;
 // Measure each character's real coverage in Martian Mono once, then sort light to dark.
@@ -122,7 +121,8 @@ async function draw(fig, img, cv, opts) {
   const edgeCut = Float32Array.from(mag).sort()[Math.floor(n * 0.86)];
 
   const dark = document.documentElement.dataset.theme === 'dark';
-  const ink = dark ? INK.dark : INK.light;
+  const hex = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
+  const ink = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
   cv.width = Math.round(cols * cw * dpr);
   cv.height = Math.round(rows * lh * dpr);
   cv.style.width = `${cols * cw}px`;

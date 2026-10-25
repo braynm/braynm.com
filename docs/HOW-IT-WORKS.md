@@ -6,7 +6,7 @@ This page describes the site from a visitor's point of view. For how it is built
 
 Every page is a file open in Vim. Each block of content is a line with a number in the left gutter. One line is the cursor line, and the gutter shows the other numbers relative to it, like `set relativenumber`. The bar at the bottom is Vim's statusline: the mode, the file path, the file type, the cursor position and how far down the page you are. Below it is the command line, where messages appear.
 
-The mode badge takes the mode's color, as in Vim's airline: plum for `NORMAL`, teal for `INSERT`, ochre for `VISUAL`, and the page color for `COMMAND` and `SEARCH`. A block cursor blinks on the first character of the cursor line in the same color. It leaves while you type a command, because the cursor is on the command line then, and it holds still with reduced motion.
+The mode badge takes the mode's color, as in Vim's airline: plum for `NORMAL`, teal for `INSERT`, ochre for `VISUAL` (in the default `modal` colorscheme; the others repaint the same roles), and the page color for `COMMAND` and `SEARCH`. A block cursor blinks on the first character of the cursor line in the same color. It leaves while you type a command, because the cursor is on the command line then, and it holds still with reduced motion.
 
 Each code block in a post is a small Vim window: line numbers down the left and a statusline underneath with the language, the line and byte counts, and the `yy` button. The statusline is dim until the block is the cursor line, like an inactive window. A paragraph that starts with **Note:**, **Tip:** or **Warning:** is marked the way Vim's help marks notes, with the word on a yellow ground.
 
@@ -16,7 +16,7 @@ The side margins on wide screens show the current line as raw bits, the way Vim 
 
 | Page | Address | What it is |
 |---|---|---|
-| Home | `/` | On the first visit in a session, the headline decodes out of hex. Then it rewrites itself with `:s/Elixir/TypeScript/` and similar substitutions. Every third round, if the visitor has been idle at the top of the page for 4 seconds, it types one of the site's own commands instead (`:set list`, `:Limelight`, `:%!xxd`, `:set bg=dark`), lets it run for about 3 seconds, and undoes it. The theme it shows is never saved. Below it: latest posts, about, projects and contact. |
+| Home | `/` | On the first visit in a session, the headline decodes out of hex. Then it rewrites itself with `:s/Elixir/TypeScript/` and similar substitutions. Every third round, if the visitor has been idle at the top of the page for 4 seconds, it types one of the site's own commands instead (`:set list`, `:Limelight`, `:%!xxd`, `:set bg=dark`, `:colorscheme ember`), lets it run for about 3 seconds, and undoes it. The theme or colorscheme it shows is never saved. Below it: latest posts, about, projects and contact. |
 | Writing | `/post/` | Every post, laid out like netrw, Vim's file browser. |
 | A post | `/post/<slug>/` | The post as a buffer. Section headings appear at the top as Vim folds (`+-- 12 lines: Capitalizing Words`). |
 | About | `/about/` | Bryan's About page. |
@@ -49,6 +49,7 @@ Selecting text with the mouse switches the statusline to `VISUAL`, shows the cha
 | Command | Does |
 |---|---|
 | `:set bg=dark`, `:set bg=light` | Switch the theme. `:set background=...` and `:se bg=...` work too. `:set bg?` shows the current value. |
+| `:colorscheme ember`, `:colorscheme phosphor`, `:colorscheme modal` | Switch the palette, with the same repaint as the theme switch. Each has a light and a dark side, so it works with `:set bg=...`. `:colo` and `:color` work too, `:colorscheme` alone shows the current one, and `Tab` completes the names and lists them over the statusline like Vim's wildmenu (`Shift-Tab` goes back). The choice is saved. |
 | `:writing`, `:about`, `:home`, `:Explore` | Go to that page |
 | `:github`, `:mail` | Open GitHub or a new email |
 | `:42` | Jump to line 42 |
@@ -59,7 +60,7 @@ Selecting text with the mouse switches the statusline to `VISUAL`, shows the cha
 | `:Limelight` | Fade everything but the cursor line, for reading one paragraph at a time. `:Limelight!` turns it off and `:Limelight!!` toggles it. |
 | `:%!xxd` | Filter the page through a hex dump. The statusline shows `xxd` and `[+]`. `u` or `:%!xxd -r` brings the page back. |
 
-The `:set bg=...` button in the header does the same as the command. Without a saved choice the site follows the system's light or dark setting. Clicking the button first types its command into the command line, with the mode showing `COMMAND` and the command's bits flipping through the margins. Then the page repaints like a raster scan, band by band, each band printed across in steps, with a plum cursor bar as the print head: dark scans down from the top left, light scans up from the bottom right. As the scan reaches each heading, its letters flip through hex bytes, like the margins, and settle left to right. The text repaints in plain ink, then the colors come back one highlight group at a time (comments, strings, keywords, functions), like a colorscheme loading, and the button's label changes with a substitution like the home headline's. On phones the browser bar changes color with the page. With reduced motion, the switch is a short crossfade. Moving between pages uses the same top-to-bottom repaint, cursor bar included, in browsers that support cross-document view transitions.
+The `:set bg=...` button in the header does the same as the command, and the `:colo ...` button beside it switches to the next colorscheme (modal, ember, phosphor, then around again) with the same typing and repaint. Without a saved choice the site follows the system's light or dark setting. Clicking the button first types its command into the command line, with the mode showing `COMMAND` and the command's bits flipping through the margins. Then the page repaints like a raster scan, band by band, each band printed across in steps, with a plum cursor bar as the print head: dark scans down from the top left, light scans up from the bottom right. As the scan reaches each heading, its letters flip through hex bytes, like the margins, and settle left to right. The text repaints in plain ink, then the colors come back one highlight group at a time (comments, strings, keywords, functions), like a colorscheme loading, and the button's label changes with a substitution like the home headline's. On phones the browser bar changes color with the page. With reduced motion, the switch is a short crossfade. Moving between pages uses the same top-to-bottom repaint, cursor bar included, in browsers that support cross-document view transitions.
 
 ## Photos
 
