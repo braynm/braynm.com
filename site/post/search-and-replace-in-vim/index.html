@@ -53,7 +53,7 @@
 
 <article class="buf post">
   <header class="row nav post-head" data-text="Using Vim Substitute">
-    <p class="info"><time datetime="2023-07-22">2023-07-22</time>&ensp; 3 min read &ensp; 569 words</p>
+    <p class="info"><time datetime="2023-07-22">2023-07-22</time>&ensp; 3 min read &ensp; 575 words</p>
     <h1 class="title">Using Vim Substitute</h1>
     <p class="excerpt"><span aria-hidden="true"># </span>Exploring search and replace in Vim</p>
   </header>
@@ -63,16 +63,17 @@
   <div class="prose" id="prose">
 <h1 id="search-and-replace-in-vim"><span class="hash" aria-hidden="true"># </span>Search and Replace in Vim</h1>
 <p>In this article, we will explore how to use Vim&rsquo;s <strong>search</strong> and <strong>replace</strong> that <em>may</em> help us to edit efficiently.</p>
-<p><strong>Note:</strong> This article required a basic understanding of regular expression.</p>
+<p class="note"><strong>Note:</strong> This article required a basic understanding of regular expression.</p>
 <p>Let&rsquo;s begin!</p>
 <h2 id="basic"><span class="hash" aria-hidden="true">## </span>Basic</h2>
 <p>See <code>:help substitute</code> to read documentation. The basic syntax for replacing text is:</p>
+
 <div class="code" data-lang="vim">
-  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
   <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"># <span class="nx">Replaces</span> `<span class="nx">hello</span>` <span class="nx">with</span> `<span class="nx">world</span>`<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="p">:</span><span class="nx">s</span><span class="sr">/hello/</span><span class="nx">world</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span># <span class="nx">hello</span> <span class="p">-&gt;</span> <span class="nx">world</span></span></span></code></pre></div>
+  <div class="code-status"><span>[vim]</span><span>4L, 65B</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
 </div>
 <p>Here is another example of changing delimiter of <code>csv</code> file from <strong><code>,</code></strong> to <strong><code>t</code></strong></p>
 <p>change delimiter:</p>
@@ -97,9 +98,10 @@ if there are <strong>thousands</strong> of rows. We will <strong>not</strong> <e
 
 <p>Pretty neat!</p>
 <p>Let&rsquo;s break down the command:</p>
+
 <div class="code" data-lang="vim">
-  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
   <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="p">:</span>%<span class="nx">s</span><span class="sr">/\a\+/</span>\<span class="nx">u</span>&amp;/<span class="nx">g</span></span></span></code></pre></div>
+  <div class="code-status"><span>[vim]</span><span>1L, 15B</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
 </div>
 <ul>
 <li><code>%s</code> - Targets all the lines in the file to perform substitution.</li>
@@ -110,16 +112,18 @@ if there are <strong>thousands</strong> of rows. We will <strong>not</strong> <e
 <li><code>g</code> - Replace all matches in the line.</li>
 </ul>
 <p>This can be more clear by using <code>magic</code> mode, by adding <code>\v</code> in front of <code>{pattern}</code></p>
+
 <div class="code" data-lang="vim">
-  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
   <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="p">:</span>%<span class="nx">s</span><span class="sr">/\v\a+/</span>\<span class="nx">u</span>&amp;/<span class="nx">g</span></span></span></code></pre></div>
+  <div class="code-status"><span>[vim]</span><span>1L, 16B</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
 </div>
 <p>This is helpful when your pattern is long, it makes the pattern more <strong>readable</strong>. To learn more about <code>magic</code> you can use <code>:help magic</code> in Vim.</p>
 <h1 id="name-initials"><span class="hash" aria-hidden="true"># </span>Name Initials</h1>
 <p>We can also make name initials: <code>Michael Scott -&gt; M. Scott or M.S.</code></p>
+
 <div class="code" data-lang="vim">
-  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
   <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl">%<span class="nx">s</span><span class="sr">/\v(&lt;.)(\a+)/</span>\<span class="nx">u</span>\<span class="m">1</span>.</span></span></code></pre></div>
+  <div class="code-status"><span>[vim]</span><span>1L, 21B</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
 </div>
 <figure class="vid">
   <video controls playsinline preload="metadata">
@@ -144,11 +148,12 @@ if there are <strong>thousands</strong> of rows. We will <strong>not</strong> <e
 </blockquote>
 <p>You can open your register by running  <code>:registers</code></p>
 <p>So we have list of places:</p>
+
 <div class="code" data-lang="csv">
-  <div class="code-bar"><span>[csv]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
   <pre tabindex="0"><code class="language-csv" data-lang="csv">Yamagawaokachiyogamizu
 Eexterveenschekanaal
 Jászfelsőszentgyörgy</code></pre>
+  <div class="code-status"><span>[csv]</span><span>3L, 68B</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
 </div>
 <p>We need to replace <strong>Yamagawaokachiyogamizu</strong> with <strong>Jászfelsőszentgyörgy</strong>:</p>
 <figure class="vid">
@@ -167,9 +172,10 @@ Jászfelsőszentgyörgy</code></pre>
 </ul>
 <p><code>&lt;C-r&gt; {register} (e.g. &lt;C-r&gt;b)</code> — Insert the contents of a numbered or named register.</p>
 <p>This will translates to:</p>
+
 <div class="code" data-lang="vim">
-  <div class="code-bar"><span>[vim]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
   <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="p">:</span>%<span class="nx">s</span><span class="sr">/Eexterveenschekanaal/</span>Jászfelsőszentgyörgy</span></span></code></pre></div>
+  <div class="code-status"><span>[vim]</span><span>1L, 49B</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
 </div>
 <p>This is nice! Fewer keystroke! We don&rsquo;t have to type these long words manually! It might save you lot of time for some typographical errors.</p>
 <h2 id="summary"><span class="hash" aria-hidden="true">## </span>Summary</h2>

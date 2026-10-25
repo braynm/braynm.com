@@ -25,7 +25,7 @@
   <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
 
   <div class="prose" id="prose">
-{{ .Content }}
+{{ .Content | replaceRE `<p><strong>(Note|Tip|Warning):</strong>` `<p class="note"><strong>$1:</strong>` | safeHTML }}
   </div>
 
   <footer class="eof">

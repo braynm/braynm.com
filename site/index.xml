@@ -38,12 +38,13 @@
 &lt;p&gt;Let&amp;rsquo;s begin!&lt;/p&gt;
 &lt;h2 id=&#34;basic&#34;&gt;&lt;span class=&#34;hash&#34; aria-hidden=&#34;true&#34;&gt;## &lt;/span&gt;Basic&lt;/h2&gt;
 &lt;p&gt;See &lt;code&gt;:help substitute&lt;/code&gt; to read documentation. The basic syntax for replacing text is:&lt;/p&gt;
+
 &lt;div class=&#34;code&#34; data-lang=&#34;vim&#34;&gt;
-  &lt;div class=&#34;code-bar&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
   &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-vim&#34; data-lang=&#34;vim&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# &lt;span class=&#34;nx&#34;&gt;Replaces&lt;/span&gt; `&lt;span class=&#34;nx&#34;&gt;hello&lt;/span&gt;` &lt;span class=&#34;nx&#34;&gt;with&lt;/span&gt; `&lt;span class=&#34;nx&#34;&gt;world&lt;/span&gt;`&lt;span class=&#34;err&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;sr&#34;&gt;/hello/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;world&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;# &lt;span class=&#34;nx&#34;&gt;hello&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;world&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;div class=&#34;code-status&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;span&gt;4L, 65B&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;Here is another example of changing delimiter of &lt;code&gt;csv&lt;/code&gt; file from &lt;strong&gt;&lt;code&gt;,&lt;/code&gt;&lt;/strong&gt; to &lt;strong&gt;&lt;code&gt;t&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;change delimiter:&lt;/p&gt;
@@ -68,9 +69,10 @@ if there are &lt;strong&gt;thousands&lt;/strong&gt; of rows. We will &lt;strong&
 
 &lt;p&gt;Pretty neat!&lt;/p&gt;
 &lt;p&gt;Let&amp;rsquo;s break down the command:&lt;/p&gt;
+
 &lt;div class=&#34;code&#34; data-lang=&#34;vim&#34;&gt;
-  &lt;div class=&#34;code-bar&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
   &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-vim&#34; data-lang=&#34;vim&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;%&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;sr&#34;&gt;/\a\+/&lt;/span&gt;\&lt;span class=&#34;nx&#34;&gt;u&lt;/span&gt;&amp;amp;/&lt;span class=&#34;nx&#34;&gt;g&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;div class=&#34;code-status&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;span&gt;1L, 15B&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;%s&lt;/code&gt; - Targets all the lines in the file to perform substitution.&lt;/li&gt;
@@ -81,16 +83,18 @@ if there are &lt;strong&gt;thousands&lt;/strong&gt; of rows. We will &lt;strong&
 &lt;li&gt;&lt;code&gt;g&lt;/code&gt; - Replace all matches in the line.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;This can be more clear by using &lt;code&gt;magic&lt;/code&gt; mode, by adding &lt;code&gt;\v&lt;/code&gt; in front of &lt;code&gt;{pattern}&lt;/code&gt;&lt;/p&gt;
+
 &lt;div class=&#34;code&#34; data-lang=&#34;vim&#34;&gt;
-  &lt;div class=&#34;code-bar&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
   &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-vim&#34; data-lang=&#34;vim&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;%&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;sr&#34;&gt;/\v\a+/&lt;/span&gt;\&lt;span class=&#34;nx&#34;&gt;u&lt;/span&gt;&amp;amp;/&lt;span class=&#34;nx&#34;&gt;g&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;div class=&#34;code-status&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;span&gt;1L, 16B&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;This is helpful when your pattern is long, it makes the pattern more &lt;strong&gt;readable&lt;/strong&gt;. To learn more about &lt;code&gt;magic&lt;/code&gt; you can use &lt;code&gt;:help magic&lt;/code&gt; in Vim.&lt;/p&gt;
 &lt;h1 id=&#34;name-initials&#34;&gt;&lt;span class=&#34;hash&#34; aria-hidden=&#34;true&#34;&gt;# &lt;/span&gt;Name Initials&lt;/h1&gt;
 &lt;p&gt;We can also make name initials: &lt;code&gt;Michael Scott -&amp;gt; M. Scott or M.S.&lt;/code&gt;&lt;/p&gt;
+
 &lt;div class=&#34;code&#34; data-lang=&#34;vim&#34;&gt;
-  &lt;div class=&#34;code-bar&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
   &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-vim&#34; data-lang=&#34;vim&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;%&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;sr&#34;&gt;/\v(&amp;lt;.)(\a+)/&lt;/span&gt;\&lt;span class=&#34;nx&#34;&gt;u&lt;/span&gt;\&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;.&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;div class=&#34;code-status&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;span&gt;1L, 21B&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;figure class=&#34;vid&#34;&gt;
   &lt;video controls playsinline preload=&#34;metadata&#34;&gt;
@@ -115,11 +119,12 @@ if there are &lt;strong&gt;thousands&lt;/strong&gt; of rows. We will &lt;strong&
 &lt;/blockquote&gt;
 &lt;p&gt;You can open your register by running  &lt;code&gt;:registers&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;So we have list of places:&lt;/p&gt;
+
 &lt;div class=&#34;code&#34; data-lang=&#34;csv&#34;&gt;
-  &lt;div class=&#34;code-bar&#34;&gt;&lt;span&gt;[csv]&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
   &lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-csv&#34; data-lang=&#34;csv&#34;&gt;Yamagawaokachiyogamizu
 Eexterveenschekanaal
 Jászfelsőszentgyörgy&lt;/code&gt;&lt;/pre&gt;
+  &lt;div class=&#34;code-status&#34;&gt;&lt;span&gt;[csv]&lt;/span&gt;&lt;span&gt;3L, 68B&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;We need to replace &lt;strong&gt;Yamagawaokachiyogamizu&lt;/strong&gt; with &lt;strong&gt;Jászfelsőszentgyörgy&lt;/strong&gt;:&lt;/p&gt;
 &lt;figure class=&#34;vid&#34;&gt;
@@ -138,9 +143,10 @@ Jászfelsőszentgyörgy&lt;/code&gt;&lt;/pre&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;code&gt;&amp;lt;C-r&amp;gt; {register} (e.g. &amp;lt;C-r&amp;gt;b)&lt;/code&gt; — Insert the contents of a numbered or named register.&lt;/p&gt;
 &lt;p&gt;This will translates to:&lt;/p&gt;
+
 &lt;div class=&#34;code&#34; data-lang=&#34;vim&#34;&gt;
-  &lt;div class=&#34;code-bar&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
   &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-vim&#34; data-lang=&#34;vim&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;%&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;sr&#34;&gt;/Eexterveenschekanaal/&lt;/span&gt;Jászfelsőszentgyörgy&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;div class=&#34;code-status&#34;&gt;&lt;span&gt;[vim]&lt;/span&gt;&lt;span&gt;1L, 49B&lt;/span&gt;&lt;button class=&#34;yank&#34; type=&#34;button&#34; aria-label=&#34;Copy code&#34;&gt;yy&lt;/button&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;This is nice! Fewer keystroke! We don&amp;rsquo;t have to type these long words manually! It might save you lot of time for some typographical errors.&lt;/p&gt;
 &lt;h2 id=&#34;summary&#34;&gt;&lt;span class=&#34;hash&#34; aria-hidden=&#34;true&#34;&gt;## &lt;/span&gt;Summary&lt;/h2&gt;

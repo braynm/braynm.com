@@ -1,4 +1,6 @@
 // The page as a Vim buffer: rows, a cursor, a statusline, a command line.
+import {decode, jobsFor} from './decode.js';
+
 export function createEditor({bits, reduce, follow}) {
   const $ = id => document.getElementById(id);
   const modeEl = $('mode');
@@ -11,9 +13,18 @@ export function createEditor({bits, reduce, follow}) {
   let cur = 0;
   let mode = 'NORMAL';
   let scrollLock = 0;
+  // Keys, commands and searches as they happen, for anything that teaches or reacts to them (:Tutor).
+  const listeners = [];
+  const emit = (kind, value) => listeners.forEach(fn => fn({kind, value}));
 
   const srcOf = r => (r.dataset.text || r.textContent).replace(/\s+/g, ' ').trim().slice(0, 240);
-  const setMode = m => { mode = m; modeEl.textContent = m; };
+  // The mode colors the statusline badge and the cursor, the way airline does.
+  const setMode = m => {
+    mode = m;
+    modeEl.textContent = m;
+    document.documentElement.dataset.mode = m;
+    caret();
+  };
   const narrow = matchMedia('(max-width: 720px)');
   let sayTimer;
   const say = (text, err) => {
@@ -34,6 +45,28 @@ export function createEditor({bits, reduce, follow}) {
     });
     posEl.textContent = `${ci + 1}:1`;
     if (mode === 'NORMAL') bits.set(srcOf(nav[cur]));
+    if (nav[cur] !== pulsed) bits.pulse(pulsed = nav[cur]);
+    caret();
+  };
+  let pulsed = null;
+
+  // A block cursor on the cursor line's first character, blinking like gVim's. It is a highlight,
+  // so the text is never touched. The home headline has its own cursor, and the command line takes it.
+  let blink;
+  const caret = () => {
+    if (!window.CSS || !CSS.highlights) return;
+    clearInterval(blink);
+    CSS.highlights.delete('vcursor');
+    const r = nav[cur];
+    const t = r && (mode === 'NORMAL' || mode === 'INSERT') && !r.querySelector('.blk') && firstText(r);
+    if (!t) return;
+    const at = t.data.search(/\S/);
+    const range = new Range();
+    range.setStart(t, at);
+    range.setEnd(t, at + 1);
+    const hl = new Highlight(range);
+    CSS.highlights.set('vcursor', hl);
+    if (!reduce) blink = setInterval(() => { hl.size ? hl.clear() : hl.add(range); }, 530);
   };
 
   // Each line number sits on the baseline of its line's first text, whatever size that text is.
@@ -209,6 +242,19 @@ export function createEditor({bits, reduce, follow}) {
     }
     return {clip, edge};
   };
+  // As the scan prints a band, the headings in it decode from hex, starting when the scan reaches them.
+  let stopDecode = null;
+  const decodeHeadings = up => {
+    stopDecode?.();
+    const jobs = [];
+    for (const h of document.querySelectorAll('#buf :is(h1, h2, h3, .entry .t, .proj .t, .contact)')) {
+      const box = h.getBoundingClientRect();
+      if (box.bottom < 0 || box.top > innerHeight) continue;
+      const band = Math.min(BANDS - 1, Math.max(0, Math.floor(box.top / innerHeight * BANDS)));
+      jobs.push(...jobsFor(h, (up ? BANDS - 1 - band : band) / BANDS * SCAN));
+    }
+    if (jobs.length) stopDecode = decode(jobs, () => { stopDecode = null; render(); });
+  };
   // After the repaint, highlight groups come back one at a time, in the order a colorscheme sets them.
   const GROUPS = ['comment', 'string', 'keyword', 'function'];
   let repaint = null;
@@ -248,6 +294,7 @@ export function createEditor({bits, reduce, follow}) {
       const {clip, edge} = scan(motion === 'up');
       root.animate(clip, {duration: SCAN, fill: 'both', pseudoElement: '::view-transition-new(root)'});
       root.animate(edge, {duration: SCAN, fill: 'both', pseudoElement: '::view-transition-new(redraw-edge)'});
+      decodeHeadings(motion === 'up');
     }, () => {});
     t.finished.finally(async () => {
       if (repaint !== t) return;
@@ -265,9 +312,12 @@ export function createEditor({bits, reduce, follow}) {
     });
     return t.finished;
   };
-  const setBg = next => {
-    chosen = next;
-    try { localStorage.setItem('bg', next); } catch {}
+  // keep: false shows a theme without making it the visitor's choice (the home headline's tour does).
+  const setBg = (next, keep = true) => {
+    if (keep) {
+      chosen = next;
+      try { localStorage.setItem('bg', next); } catch {}
+    }
     say(`:set background=${next}`);
     return applyBg(next, true);
   };
@@ -284,9 +334,9 @@ export function createEditor({bits, reduce, follow}) {
     if (!reduce) {
       setMode('COMMAND');
       const typed = document.createElement('span');
-      const caret = document.createElement('span');
-      caret.className = 'caret';
-      cmdline.replaceChildren(typed, caret);
+      const cmdCaret = document.createElement('span');
+      cmdCaret.className = 'caret';
+      cmdline.replaceChildren(typed, cmdCaret);
       for (const ch of `:set bg=${next}`) {
         typed.textContent += ch;
         bits.set(typed.textContent);
@@ -310,7 +360,8 @@ export function createEditor({bits, reduce, follow}) {
     ['github', go('https://github.com/braynm')],
     ['mail', go('mailto:hi@braynm.com')],
     ['noh', () => { paint('search', []); paint('search-cur', []); }],
-    ['help', () => say('Try :set bg=dark  :writing  :about  :home  :42  :noh  :q, or /elixir then n')],
+    ['Tutor', go('/tutor/')],
+    ['help', () => say('Try :Tutor  :set bg=dark  :writing  :about  :42  :set list  :%!xxd  :q, or /elixir then n')],
     ['q', () => say('E37: No write since last change (add ! to override)', true)],
   ]);
   const patterns = [
@@ -358,10 +409,12 @@ export function createEditor({bits, reduce, follow}) {
       if (e.key !== 'Enter') return;
       // Consume Enter, or it carries on and presses whatever the command focused (the :q! shell's button).
       e.preventDefault();
-      const c = input.value.trim();
+      // Vim skips extra colons, so a pasted ":set bg=dark" still runs.
+      const c = lead === '/' ? input.value.trim() : input.value.trim().replace(/^:+\s*/, '');
       setMode('NORMAL');
       say('');
-      if (lead === '/') { search(c); jump(1); return; }
+      if (lead === '/') { search(c); jump(1); emit('search', c); return; }
+      emit('cmd', c);
       run(c);
     });
     input.addEventListener('blur', () => { if (mode !== 'NORMAL') { setMode('NORMAL'); render(); } });
@@ -421,6 +474,7 @@ export function createEditor({bits, reduce, follow}) {
       pending = '';
       e.preventDefault();
       keys.get(seq)();
+      emit('key', seq);
     } else if ([...keys.keys()].some(k => k.startsWith(seq))) {
       pending = seq;
       pendingTimer = setTimeout(() => { pending = ''; }, 1000);
@@ -453,6 +507,11 @@ export function createEditor({bits, reduce, follow}) {
   return {
     key,
     cmd: (name, fn) => commands.set(name, fn),
+    on: fn => listeners.push(fn),
+    run: c => { say(''); emit('cmd', c); run(c); },
+    press: seq => { keys.get(seq)?.(); emit('key', seq); },
+    setBg,
+    theme: () => bg,
     onTheme: fn => themed.push(fn),
     setMode,
     say,

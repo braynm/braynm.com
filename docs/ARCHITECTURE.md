@@ -70,7 +70,7 @@ The theme script is inline and not deferred, so the page never paints in the wro
                             │
         ┌───────────────────┼─────────────────────────┬──────────────┐
         ▼                   ▼                         ▼              ▼
-   post.js            bits.js ◄──── set(text) ──── editor.js ──► easter.js
+   post.js            bits.js ◄──── set(text) ──── editor.js ──► easter.js, views.js
    preparePost()      createBits()                createEditor()   :q! shell, :help 42 …
    rows + folds       canvas#bits, .dump strip    rows, cursor,        │
         │                   ▲                     statusline,          │
@@ -80,6 +80,8 @@ The theme script is inline and not deferred, so the page never paints in the wro
    ascii.js ────────────────┘ (theme change)           │    │
    drawings                                        hero.js  netrw.js
                                                    home     Writing page
+
+   tutor.js listens through ed.on() on the Tutor page.
 ```
 
 The order matters. `preparePost()` runs before `createEditor()`, because it turns each block of a post into a line, and the editor collects the lines when it starts.
@@ -97,15 +99,27 @@ Each number sits on the baseline of its line's first text, or of the heading whe
 
 On the home page, on devices that can hover, the cursor follows the mouse. Everywhere else it follows scrolling: the cursor is the last line whose top is above 35% of the viewport. `j` and `k` scroll the new cursor line to that same 35% mark, so key moves and scroll-following agree. The attribute is `data-text`, never `data-src`: templating that treats `*src` as a URL percent-encodes it.
 
+`setMode()` also sets `data-mode` on `<html>`. CSS turns it into `--mode` and `--mode-ink`, which color the statusline badge, the tall cursor line's edge and the block cursor. The block cursor is the `vcursor` highlight on the first visible character of the cursor line, so the text is never changed. A 530ms interval clears and refills the highlight to blink it. There is no cursor on a line with the home headline's own cursor (`.blk`), or while the mode is `COMMAND`, `SEARCH` or `VISUAL`.
+
 ### Keys and commands
 
 One `keydown` listener handles normal mode. It ignores keys with modifiers and keys typed into fields. Two-key sequences (`gg`, `zj`, `yy`, `ZZ`) wait up to a second for the second key. Other modules add keys and commands through `ed.key(seq, fn)` and `ed.cmd(name, fn)`; `netrw.js` adds `s` and `-`, and `easter.js` adds its commands.
+
+`ed.on(fn)` hears every key sequence, command and search as `{kind, value}` after it runs (`kind` is `key`, `cmd` or `search`). `tutor.js` uses it: each lesson in its `LESSONS` table is a heading id and a list of steps, and the lesson is done once every step has matched. Done lessons are saved in `localStorage` under `tutor`. A leading `:` typed or pasted into the command line is dropped, as Vim does, so a yanked `:set bg=dark` runs.
+
+`views.js` holds the other ways of looking at the buffer. `:Limelight` only toggles the `limelight` class on `<html>`; CSS fades every line but the cursor's. `:set list` rewrites the text nodes of every line, keeping the originals in a `Map` for `:set nolist`: a rendered space becomes `·` plus a zero-width space, so lines still wrap there, and `¬` is added at the end of each block, or before each newline inside `pre`. The new characters are colored with `::highlight(list)`. `:%!xxd` reads the text of every line, swaps the page's `.buf` for a `.buf.xxd` of hex rows inside a view transition, and pushes the old `.buf` on an undo stack, so `u` and `:%!xxd -r` put the same elements back with their listeners. It picks 16, 8 or 4 bytes per row, whichever fits the width, because a hex row must never wrap.
 
 `:` and `/` replace the command line's message with an input. Pressing `Enter` there calls `preventDefault()`. Without it the keypress continues and presses whatever the command just focused; that is how `:q!` once closed its own shell.
 
 Search uses the CSS Custom Highlight API: matches are `Range`s painted with `::highlight(search)`, so the DOM is never changed. Case is ignored unless the query has a capital letter, like Vim's `smartcase`.
 
+### The home headline
+
+`hero.js` loops forever, 2.2s between rounds. Most rounds type a substitution into the line under the headline and apply it. Every third round, when `free()` holds (scrolled to the top, tab visible, `NORMAL` mode, no key, pointer, wheel or touch input for 4s, and none of the tour's own effects already on), it takes the next stop from `TOUR`. Each stop types its command, runs it through `ed.run()` or `ed.setBg(next, false)`, and returns its own undo. The undo only acts if the visitor has not undone it already, and afterwards the command line gets its key hint back. `ed.setBg` with `false` shows a theme without saving it as the visitor's choice. The first time the home page opens in a session (`sessionStorage` key `decoded`), both headline lines run through `decode()`. With reduced motion none of this runs.
+
 ### The binary margins
+
+`bits.pulse(el)` starts a 0.9s beam: the margin row nearest the top of `el` draws in plum and fades, and it follows `el` if the page scrolls. `editor.js` calls it whenever the cursor moves to another line. It is off with reduced motion.
 
 `bits.js` draws on a fixed full-screen canvas every animation frame:
 
@@ -144,7 +158,7 @@ The drawing re-renders when its width or the pixel density changes, and when the
 
 The theme switch and page-to-page navigation both use view transitions. `::view-transition-new(root)` reveals the new page top to bottom in steps, like a terminal redraw. Every page has a static `div.redraw-edge`, the cursor bar on the repaint's leading edge. It is `display: none` except under `:root:active-view-transition`, so it shows on theme switches and page loads alike; it must be in the HTML because `main.js` runs too late for a page load's first frame. It has its own `view-transition-name`, and its `sweep` keyframes use the same duration and step count as `redraw`, so the bar stays on the clip edge. Change both together.
 
-The theme switch scans instead of wiping. It sets `data-redraw` to `down` (dark) or `up` (light), which turns off both CSS animations and makes the bar one band tall (`--bands`). Then, once the transition is ready, `editor.js` animates both pseudo-elements with the Web Animations API: 8 bands down the screen, each band printed left to right in 6 steps, 0.8s in all, with the bar's transform keyframes matching the clip-path keyframes. `up` runs the same scan from the bottom right. `BANDS`, `COLS` and `SCAN` in `editor.js` set the shape. It also sets `data-syntax-off="comment string keyword function"` inside the update callback; each name sets one token (`--dim`, `--ochre`, `--plum`, `--teal`) to `--ink` inside the header and `#buf`. Starting 180ms after the repaint ends, `editor.js` removes one name every 70ms, so the highlight groups get their colors back in order. Then the button's label changes by substitution, the way the home headline does. With reduced motion the switch is a 0.15s crossfade (`data-redraw="fade"`) with none of this.
+The theme switch scans instead of wiping. It sets `data-redraw` to `down` (dark) or `up` (light), which turns off both CSS animations and makes the bar one band tall (`--bands`). Then, once the transition is ready, `editor.js` animates both pseudo-elements with the Web Animations API: 8 bands down the screen, each band printed left to right in 6 steps, 0.8s in all, with the bar's transform keyframes matching the clip-path keyframes. `up` runs the same scan from the bottom right. `BANDS`, `COLS` and `SCAN` in `editor.js` set the shape. It also sets `data-syntax-off="comment string keyword function"` inside the update callback; each name sets one token (`--dim`, `--ochre`, `--plum`, `--teal`) to `--ink` inside the header and `#buf`. Starting 180ms after the repaint ends, `editor.js` removes one name every 70ms, so the highlight groups get their colors back in order. While the scan runs, `decode()` from `decode.js` flips the letters and digits of each heading on screen (`h1`–`h3`, the home and project titles, the contact line) through hex digits every 45ms. Each heading starts when the scan reaches its band and settles left to right over 450ms. It changes only the text nodes' characters and puts the originals back, and the headings are monospaced, so nothing reflows. A second switch mid-scan settles the first one before it starts. Then the button's label changes by substitution, the way the home headline does. With reduced motion the switch is a 0.15s crossfade (`data-redraw="fade"`) with none of this.
 
 The browser bar color comes from the `theme-color` meta tags, which only know the system theme. The inline theme script sets both to a saved choice before first paint, and the theme switch sets them when the repaint reaches the top of the screen. Cross-document transitions are inside `prefers-reduced-motion: no-preference`; browsers without support load pages normally.
 
@@ -156,7 +170,7 @@ The browser bar color comes from the `theme-color` meta tags, which only know th
 
 1. `hugo new post/<slug>.md`. The slug is the address: `/post/<slug>/`.
 2. Fill in the front matter: `title`, `excerpt` (the line under the title), and optionally `description` (search and share text, if different) and `photo` (a file in `static/images/`, drawn at the end of the post). Delete `draft: true` when it is ready; drafts are never built.
-3. Write the post in Markdown. `##` headings become the folds. Fenced code blocks get the `[lang]` bar, the `yy` button and highlighting. A video is `{{< video "file.mp4" >}}` on a line of its own, with the file in `static/videos/`.
+3. Write the post in Markdown. `##` headings become the folds. Fenced code blocks get highlighting, line numbers and a statusline with `[lang]`, the line and byte counts and the `yy` button; `render-codeblock.html` counts them at build time, and the line numbers are a CSS counter, so `yy` never copies them. A paragraph that starts with `**Note:**`, `**Tip:**` or `**Warning:**` gets the `note` class from `single.html`. A video is `{{< video "file.mp4" >}}` on a line of its own, with the file in `static/videos/`.
 4. Preview with `hugo server` at http://localhost:1313.
 5. Run `tools/publish.sh`, then commit `content/`, `static/` and `site/` together.
 

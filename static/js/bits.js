@@ -2,6 +2,7 @@
 const ROW_H = 18;
 const FLIP = 900;
 const GLOW = 160;
+const BEAM = 900;
 const enc = s => [...new TextEncoder().encode(s + '  ')];
 
 export function createBits({canvas, strip, column, reduce}) {
@@ -12,6 +13,21 @@ export function createBits({canvas, strip, column, reduce}) {
   let mx = -1e4;
   let my = -1e4;
   let sidesOn = null;
+  // When the cursor moves, the margin row level with the new cursor line lights up in plum and fades,
+  // like a scanner line across the dump. It follows the line if the page scrolls while it fades.
+  let beamEl = null;
+  let beamT = -1e9;
+  const pulse = el => {
+    if (reduce || !el) return;
+    beamEl = el;
+    beamT = performance.now();
+  };
+  const beamAt = now => {
+    const age = (now - beamT) / BEAM;
+    if (age >= 1 || !beamEl?.isConnected) return null;
+    const r = beamEl.getBoundingClientRect();
+    return {y: r.top + Math.min(r.height, 40) / 2, k: (1 - age) ** 2};
+  };
 
   // A tap is not a hover: only a mouse lights bits, and leaving the window puts them out.
   addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { mx = e.clientX; my = e.clientY; } });
@@ -49,14 +65,14 @@ export function createBits({canvas, strip, column, reduce}) {
   };
 
   // Whole bytes are one fillText; only bytes that are flipping or under the cursor glow draw bit by bit.
-  const drawByte = (g, now, p, x, y, alpha, delay, vis) => {
+  const drawByte = (g, now, p, x, y, alpha, delay, vis, beam = 0) => {
     const nb = at(cur, p);
     const ob = at(old, p);
     const dt = reduce ? FLIP : now - t0 - delay;
     const near = Math.hypot(x + g.cw * 4 - mx, y - my) < GLOW;
     if ((dt >= FLIP || nb === ob) && !near) {
-      g.globalAlpha = alpha;
-      g.fillStyle = C.dim;
+      g.globalAlpha = Math.min(1, alpha + beam * 0.85 * vis);
+      g.fillStyle = beam > 0.04 ? C.plum : C.dim;
       g.fillText(nb.toString(2).padStart(8, '0'), x, y);
       return dt >= 0 ? nb : ob;
     }
@@ -67,8 +83,8 @@ export function createBits({canvas, strip, column, reduce}) {
       const cx = x + b * g.cw;
       const lit = Math.max(0, 1 - Math.hypot(cx - mx, y - my) / GLOW);
       const flash = nv !== ov && bd >= 0 && bd < FLIP ? 1 - bd / FLIP : 0;
-      g.globalAlpha = Math.min(1, alpha + (lit * 0.7 + flash) * vis);
-      g.fillStyle = flash > 0 ? C.plum : lit > 0.05 ? C.teal : C.dim;
+      g.globalAlpha = Math.min(1, alpha + (lit * 0.7 + flash + beam * 0.85) * vis);
+      g.fillStyle = flash > 0 || beam > 0.04 ? C.plum : lit > 0.05 ? C.teal : C.dim;
       g.fillText(bd >= 0 ? nv : ov, cx, y);
     }
     return dt >= 0 ? nb : ob;
@@ -86,14 +102,16 @@ export function createBits({canvas, strip, column, reduce}) {
     const yoff = -(drift - first) * ROW_H;
     const fadeH = H * 0.2;
     const bottom = H - 64;
+    const lit = beamAt(now);
     for (let r = 0; r * ROW_H + yoff < H; r++) {
       const y = yoff + r * ROW_H + ROW_H / 2;
       const av = Math.max(0, Math.min(1, (y - 8) / fadeH, (bottom - y) / fadeH));
       if (!av) continue;
       const base = (first + r) * 2 * n;
       const delay = (y / H) * 600;
-      g.globalAlpha = av * 0.45;
-      g.fillStyle = C.dim;
+      const beam = lit ? lit.k * Math.max(0, 1 - Math.abs(y - lit.y) / ROW_H) : 0;
+      g.globalAlpha = Math.min(1, av * 0.45 + beam * 0.85 * av);
+      g.fillStyle = beam > 0.04 ? C.plum : C.dim;
       g.fillText(base.toString(16).padStart(7, '0') + ':', 16, y);
       let ascii = '';
       for (let j = 0; j < 2 * n; j++) {
@@ -101,11 +119,11 @@ export function createBits({canvas, strip, column, reduce}) {
         const d = left ? n - 1 - j : j - n;
         const fade = 0.18 + 0.82 * (n > 1 ? d / (n - 1) : 1);
         const x = left ? 16 + (9 + j * 9) * g.cw : W - 16 - (11 * n + 1) * g.cw + (j - n) * 9 * g.cw;
-        const v = drawByte(g, now, base + j, x, y, av * fade * 0.38, delay + d * 30, av);
+        const v = drawByte(g, now, base + j, x, y, av * fade * 0.38, delay + d * 30, av, beam);
         ascii += v >= 32 && v < 127 ? String.fromCharCode(v) : '.';
       }
-      g.globalAlpha = av * 0.55;
-      g.fillStyle = C.dim;
+      g.globalAlpha = Math.min(1, av * 0.55 + beam * 0.85 * av);
+      g.fillStyle = beam > 0.04 ? C.plum : C.dim;
       g.fillText(ascii, W - 16 - 2 * n * g.cw, y);
     }
     return true;
@@ -137,5 +155,5 @@ export function createBits({canvas, strip, column, reduce}) {
     requestAnimationFrame(frame);
   })(performance.now());
 
-  return {set, recolor};
+  return {set, recolor, pulse};
 }

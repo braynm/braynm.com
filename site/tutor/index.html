@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DCE3D3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#182017" media="(prefers-color-scheme: dark)">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('bg'); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (t) document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) { m.content = t === 'dark' ? '#182017' : '#DCE3D3'; });
+})();
+</script>
+<title>Tutor | Bryan Madrid</title>
+<meta name="description" content="Seven short lessons in the keys this site understands, the way vimtutor teaches Vim.">
+<link rel="canonical" href="https://braynm.com/tutor/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bryan Madrid">
+<meta property="og:title" content="Tutor">
+<meta property="og:description" content="Seven short lessons in the keys this site understands, the way vimtutor teaches Vim.">
+<meta property="og:url" content="https://braynm.com/tutor/">
+<meta property="og:image" content="https://braynm.com/images/og/tutor.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Bryan Madrid" href="/index.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body data-page="page">
+<canvas id="bits" aria-hidden="true"></canvas>
+<div class="redraw-edge" aria-hidden="true"></div>
+<a class="skip" href="#buf">Skip to content</a>
+<header class="top wrap">
+  <a class="path" href="/">~/braynm.com</a><span class="crumb">/tutor.md</span>
+  <nav aria-label="Site">
+    <a href="/post/">writing</a>
+    <a href="/about/">about</a>
+    <a href="https://github.com/braynm">github</a>
+    <button class="bg" id="bg-toggle" type="button">:set bg=dark</button>
+  </nav>
+</header>
+<main id="buf">
+
+<article class="buf post">
+  <header class="row nav post-head" data-text="Tutor">
+    <h1 class="title">Tutor</h1>
+    <p class="excerpt"><span aria-hidden="true"># </span>Seven short lessons in the keys this site understands, the way vimtutor teaches Vim.</p>
+  </header>
+  <div class="dump" aria-hidden="true"><canvas></canvas></div>
+  <nav class="folds" id="folds" aria-label="Sections in this post"></nav>
+
+  <div class="prose" id="prose">
+<p>Every page on this site is a Vim buffer, and this one teaches you to move around it. Do what a lesson says and a ✓ appears beside its heading. Your progress stays in this browser.</p>
+<p>The lessons need a keyboard. On a phone, the <code>:</code> and <code>/</code> buttons in the statusline cover lessons 4 and 6.</p>
+<h2 id="tutor-move"><span class="hash" aria-hidden="true">## </span>Lesson 1: Move down and up</h2>
+<p>Press <code>j</code> to move the cursor down one line, and <code>k</code> to move it back up. The cursor is the highlighted line. Its number in the left gutter is its real line number, and the other numbers count how far away each line is.</p>
+<p>Press <code>j</code> a few times now, then <code>k</code>.</p>
+<h2 id="tutor-ends"><span class="hash" aria-hidden="true">## </span>Lesson 2: Go to the top and the bottom</h2>
+<p>Press <code>G</code> to go to the last line. Press <code>g</code> twice, <code>gg</code>, to come back to the first.</p>
+<h2 id="tutor-sections"><span class="hash" aria-hidden="true">## </span>Lesson 3: Jump between sections</h2>
+<p>The list near the top of this page shows each section as a Vim fold. Press <code>zj</code> to jump to the next section, and <code>zk</code> to jump back to the one before.</p>
+<h2 id="tutor-search"><span class="hash" aria-hidden="true">## </span>Lesson 4: Search</h2>
+<p>Press <code>/</code>, type <code>cursor</code>, and press Enter. Every match lights up. Press <code>n</code> for the next match and <code>N</code> for the one before. Type <code>:noh</code> to clear the highlights.</p>
+<p>A lowercase search ignores case. Put a capital letter in it and the case has to match.</p>
+<h2 id="tutor-yank"><span class="hash" aria-hidden="true">## </span>Lesson 5: Copy a line</h2>
+<p>Move the cursor onto the code below and press <code>yy</code>. The code is copied, ready to paste.</p>
+
+<div class="code" data-lang="vim">
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="p">:</span><span class="nx">set</span> <span class="nx">bg</span><span class="p">=</span><span class="nb">dark</span></span></span></code></pre></div>
+  <div class="code-status"><span>[vim]</span><span>1L, 13B</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
+</div>
+<h2 id="tutor-commands"><span class="hash" aria-hidden="true">## </span>Lesson 6: Run a command</h2>
+<p>Press <code>:</code> to open the command line at the bottom of the screen. Type <code>set bg=dark</code> and press Enter, or paste the line you copied in lesson 5. The page repaints in the dark theme, and <code>:set bg=light</code> brings the light one back.</p>
+<p><code>:writing</code> lists every post, <code>:about</code> and <code>:home</code> go to those pages, and <code>:help</code> lists the other commands.</p>
+<h2 id="tutor-quit"><span class="hash" aria-hidden="true">## </span>Lesson 7: Quit</h2>
+<p>Everyone asks how to quit Vim. Type <code>:q!</code> and press Enter to find out. A button there opens the site again.</p>
+<h2 id="tutor-summary"><span class="hash" aria-hidden="true">## </span>Summary</h2>
+<ul>
+<li><code>j</code> and <code>k</code> move down and up, and <code>gg</code> and <code>G</code> go to the top and the bottom.</li>
+<li><code>zj</code> and <code>zk</code> jump between sections.</li>
+<li><code>/</code> searches, and <code>n</code> and <code>N</code> step through the matches.</li>
+<li><code>yy</code> copies the line under the cursor.</li>
+<li><code>:</code> runs a command, and <code>:help</code> lists them.</li>
+<li><code>Enter</code> opens the link on the cursor line. Try it on <a href="/post/">:Explore post/</a>.</li>
+</ul>
+
+  </div>
+
+  <footer class="eof">
+    <div class="row tilde" aria-hidden="true">~</div>
+    <div class="row tilde" aria-hidden="true">~</div>
+    <p class="row nav sign" data-text="hi@braynm.com">Written by Bryan Madrid, in Vim. Reply to <a href="mailto:hi@braynm.com">hi@braynm.com</a>.</p>
+  </footer>
+</article>
+
+</main>
+<div class="status">
+  <div class="bar">
+    <span class="mode" id="mode">NORMAL</span>
+    <button class="key" type="button" data-key=":" aria-label="Open command line">:</button>
+    <button class="key" type="button" data-key="/" aria-label="Search this page">/</button>
+    <span class="file">~/braynm.com/tutor.md</span>
+    <span class="meta">utf-8 &nbsp; markdown &nbsp; <span id="pos">1:1</span></span>
+    <span class="pct" id="pct">Top</span>
+  </div>
+  <div class="cmdline" id="cmdline" aria-live="polite"><span class="msg">"tutor.md" 55L, 2393B
+</span></div>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

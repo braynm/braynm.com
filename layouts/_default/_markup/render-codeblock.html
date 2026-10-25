@@ -1,4 +1,5 @@
+{{- $lines := len (split (strings.TrimRight "\n" .Inner) "\n") }}
 <div class="code" data-lang="{{ .Type }}">
-  <div class="code-bar"><span>[{{ .Type }}]</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
   {{ highlight .Inner .Type "" }}
+  <div class="code-status"><span>[{{ .Type }}]</span><span>{{ $lines }}L, {{ add (len .Inner) 1 }}B</span><button class="yank" type="button" aria-label="Copy code">yy</button></div>
 </div>
