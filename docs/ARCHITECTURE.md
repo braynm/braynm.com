@@ -30,8 +30,9 @@ assets/                          processed by Hugo
 static/                          copied into site/ as is
   fonts/                         Martian Mono and Literata from Google Fonts, latin and latin-ext
   images/, images/og/, videos/
+  typua/                         Typua's build, copied in from ~/typescript/typua (README.md, "Typua")
   _redirects                     301s for posts that changed address
-  _headers                       caches js/, css/ and fonts/ for a year
+  _headers                       caches js/, css/, fonts/ and typua/assets/ for a year
   favicon.svg, favicon.ico, apple-touch-icon.png
 site/                            Hugo's output, committed; everything Cloudflare publishes. Never edit it.
 tools/publish.sh                 builds site/, renders the share cards, builds again

@@ -39,6 +39,24 @@ Cloudflare Pages builds from the `main` branch of `github.com/braynm/braynm.com`
 
 Only `site/` is published, and Cloudflare never runs Hugo, so build and commit `site/` before pushing. The sources (`content/`, `layouts/`, `assets/`, `static/`, `hugo.toml`), `README.md`, `CLAUDE.md`, `docs/` and `tools/` stay in the repository and are never served.
 
+## Typua
+
+`/typua/` serves Typua, a TypeScript course built in a separate repository at `~/typescript/typua`. Its build is committed in `static/typua/`, and Hugo copies it into `site/typua/` like any other static file. Never edit `static/typua/` by hand: rebuild Typua and copy the build in.
+
+To update it:
+
+```sh
+cd ~/typescript/typua
+pnpm build                                                     # build Typua into dist/
+rsync -a --delete dist/ ~/braynm.com/website-v2/static/typua/  # make static/typua/ an exact copy of dist/
+cd ~/braynm.com/website-v2
+hugo                                                           # copy it into site/typua/
+```
+
+Then commit `static/typua/` and `site/typua/` together and push. Keep `--delete`: Typua names every file in `assets/` by its hash, so each build has new file names, and `--delete` removes the old ones. Keep the slash after `dist/`, or rsync puts the files in `static/typua/dist/`.
+
+Typua's build uses relative paths, so it works under `/typua/` with no configuration. `static/_headers` caches `/typua/assets/*` for a year, like `js/` and `css/`. To check it before pushing, serve `site/` as in "Run it locally" and open http://localhost:8765/typua/.
+
 ## Share cards
 
 Each page has a 1200×630 preview image in `static/images/og/`. `tools/publish.sh` renders them from the built pages, so run it after you add a post or change a title or excerpt.
